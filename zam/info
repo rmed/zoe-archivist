@@ -1,0 +1,7 @@
+agent = archivist
+version = 0.1.0
+license = MIT
+maintainer = Rafael Medina García <rafamedgar@gmail.com>
+script = archivist.py
+topics =
+description = Archive management based around small information cards
