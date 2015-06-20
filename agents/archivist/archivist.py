@@ -93,8 +93,43 @@ class Archivist:
         msg = _("Added card '%s' to section '%s'") % (title, section)
         return self.feedback(msg, sender)
 
-    def backup_archive(self, sender=None, mail=None):
-        pass
+    @Message(tags=["backup"])
+    def backup_archive(self, sender=None, dst_user=None):
+        """ Create a SQL dump file of the archive and send it to
+            the provided mail or the sender's mail.
+        """
+        if not self.has_permissions(sender):
+            print(MSG_NO_PERM)
+            return self.feedback(MSG_NO_PERM, sender)
+
+        to = dst_user or sender or None
+        if not to:
+            return
+
+        conn, cur = self.connect()
+        tstamp = datetime.now().strftime("%Y%m%d%H%M%S")
+
+        fname = path("/", "tmp", "archive_%s.dump" % tstamp)
+
+        with open(fname, "w") as dump:
+            for line in conn.iterdump():
+                dump.write("%s\n" % line)
+
+        with open(fname, "rb") as dump:
+            data = dump.read()
+
+        b64 = base64.standard_b64encode(data).decode("utf-8")
+        attachment = zoe.Attachment(
+            b64, "application/octet-stream", "archive_%s.dump" % tstamp)
+
+        subject = _("Archive dump - %s") % tstamp
+        msg = _("Sending dump to %s") % to
+
+        # Send dump to user
+        return (
+            self.feedback(msg, to),
+            self.feedback(attachment, to, subject)
+        )
 
     @Message(tags=["new", "section"])
     def create_section(self, name, sender=None):
@@ -151,12 +186,12 @@ class Archivist:
 
         return conn, cur
 
-    def feedback(self, message, user):
-        """ If there is a sender, send feedback message with status
-            through Jabber.
+    def feedback(self, data, user, subject=None):
+        """ Send a message or mail to a given user.
 
-            message -- message to send
-            user    -- user to send the message to
+            data    - message text or attachment
+            user    - user to send the feedback to
+            subject - if using mail feedback, subject for the mail
         """
         if not user:
             return
@@ -164,10 +199,17 @@ class Archivist:
         to_send = {
             "dst": "relay",
             "tag": "relay",
-            "relayto": "jabber",
-            "to": user,
-            "msg": message
+            "to": user
         }
+
+        if not subject:
+            to_send["relayto"] = "jabber"
+            to_send["msg"] = data
+
+        else:
+            to_send["relayto"] = "mail"
+            to_send["att"] = data.str()
+            to_send["subject"] = subject
 
         return zoe.MessageBuilder(to_send)
 
