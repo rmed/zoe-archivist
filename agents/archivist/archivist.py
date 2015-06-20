@@ -49,14 +49,17 @@ Q_CREATE = """create table %s (
 Q_DELETE = "delete from %s where id = ?"
 Q_DROP = "drop table %s"
 Q_EXISTS = "select name from sqlite_master where type='table' and name='?'"
+Q_GET_CARD = "select * from %s where id=?"
 Q_INSERT = "insert into %s values(NULL, ?, ?, ?, ?, ?, ?)"
+Q_LIST_CARDS = "select cid, title, description from %s"
 
 REGEX_TABLE = re.compile("\A[a-zA-Z0-9_]+\Z")
+
 
 @Agent(name="archivist")
 class Archivist:
 
-    @Message(tags=["new", "card"])
+    @Message(tags=["add-card"])
     def add_card(self, section, title, desc, content, tags, sender=None):
         """ Add a new card to the given section.
 
@@ -128,10 +131,10 @@ class Archivist:
         # Send dump to user
         return (
             self.feedback(msg, to),
-            self.feedback(attachment, to, subject)
+            self.feedback(None, to, subject, attachment)
         )
 
-    @Message(tags=["new", "section"])
+    @Message(tags=["new-section"])
     def create_section(self, name, sender=None):
         """ Create a new table in the database if it does not exist.
 
@@ -162,13 +165,115 @@ class Archivist:
     def remove_card(self, section, cid, sender=None):
         pass
 
-    def get_card(self, section, cid, sender=None):
-        pass
+    @Message(tags=["get-card"])
+    def get_card(self, section, cid, sender, method, to=None):
+        """ Obtain information from a single card and send it to the user
+            through the chosen communication method.
+        """
+        if not REGEX_TABLE.match(section):
+            msg = _("'%s' is not a valid section name") % section
+            return self.feedback(msg, sender)
 
-    def get_cards(self, section, sender=None):
-        pass
+        try:
+            conn, cur = self.connect()
 
-    def list_sections(self, sender=None):
+            cur.execute(Q_GET_CARD % section, (int(cid)))
+
+            card = cur.fetchone()
+
+            cur.close()
+            conn.close()
+
+            if not card:
+                msg = _("Card %s not found in section '%s'") % (cid, section)
+                return self.feedback(msg, sender)
+
+        except sqlite3.OperationalError as e:
+            return self.feedback(e, sender)
+
+        msg = self.build_card_msg(card)
+
+        if not to:
+            to = sender
+
+        if method == "mail":
+            return self.feedback(msg, to, subject)
+
+        return self.feedback(msg, to)
+
+    @Message(tags=["get-cards"])
+    def get_cards(self, section, cids, sender, method, to=None):
+        """ Obtain information from a list of cards and send it to the user
+            through the chosen communication method.
+        """
+        if not REGEX_TABLE.match(section):
+            msg = _("'%s' is not a valid section name") % section
+            return self.feedback(msg, sender)
+
+        try:
+            conn, cur = self.connect()
+
+            msg = ""
+
+            for cid in cids:
+                cur.execute(Q_GET_CARD % section, (int(cid)))
+
+                card = cur.fetchone()
+
+                if card:
+                    msg += "%s\n" % self.build_card_msg(card)
+                    continue
+
+                msg += _("Card %s not found") % cid
+
+            cur.close()
+            conn.close()
+
+        except sqlite3.OperationalError as e:
+            return self.feedback(e, sender)
+
+        if not to:
+            to = sender
+
+        if method == "mail":
+            return self.feedback(msg, to, subject)
+
+        return self.feedback(msg, to)
+
+    @Message(tags=["list-cards"])
+    def list_cards(self, section, sender):
+        """ List all the cards in a given section. """
+        if not REGEX_TABLE.match(section):
+            msg = _("'%s' is not a valid section name") % section
+            return self.feedback(msg, sender)
+
+        try:
+            conn, cur = self.connect()
+
+            cur.execute(Q_LIST_CARDS % section)
+
+            card = cur.fetchone()
+            msg = ""
+            while card:
+                msg += "- (%d) %s: %s\n" % (
+                    card["id"], card["title"], card["description"])
+
+                card = cur.fetchone()
+
+            cur.close()
+            conn.close()
+
+        except sqlite3.OperationalError as e:
+            return self.feedback(e, sender)
+
+        if not msg:
+            msg = _("No cards found")
+
+        return self.feedback(msg, sender)
+
+    @Message(tags=["list-sections"])
+    def list_sections(self, sender):
+        """ Show all the sections/tables in the archive. """
         pass
 
     def remove_section(self, section, sender=None):
@@ -177,8 +282,17 @@ class Archivist:
     def search(self, section, query, sender=None):
         pass
 
-    def check_permissions(self, user):
-        return False
+    def build_card_msg(self, card):
+        """ Format the card's information for easier reading. """
+        msg = "Card %d\n---------\n" % card["id"]
+        msg += "Title: %s\n" % card["title"]
+        msg += "Description: %s\n" % card["description"]
+        msg += "Tags: %s\n" % card["tags"]
+        msg += "Last modified <%s> by %s\n\n" % (
+            str(card["modified"]), card["modified_by"])
+        msg += card["content"]
+
+        return msg
 
     def connect(self):
         conn = sqlite3.connect(DB_PATH)
@@ -186,12 +300,13 @@ class Archivist:
 
         return conn, cur
 
-    def feedback(self, data, user, subject=None):
+    def feedback(self, msg, user, subject=None, att=None):
         """ Send a message or mail to a given user.
 
-            data    - message text or attachment
+            msg     - message text or attachment
             user    - user to send the feedback to
             subject - if using mail feedback, subject for the mail
+            att     - mail attachment
         """
         if not user:
             return
@@ -204,11 +319,13 @@ class Archivist:
 
         if not subject:
             to_send["relayto"] = "jabber"
-            to_send["msg"] = data
+            to_send["msg"] = msg
 
         else:
             to_send["relayto"] = "mail"
-            to_send["att"] = data.str()
+            if att:
+                to_send["att"] = att.str()
+            to_send["txt"] = msg or ""
             to_send["subject"] = subject
 
         return zoe.MessageBuilder(to_send)
