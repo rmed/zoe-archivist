@@ -51,7 +51,7 @@ Q_CREATE = """create table %s (
 Q_GET_CARD = "select * from %s where id=?"
 Q_GET_CARDS = "select * from %s"
 Q_INSERT = "insert into %s values(NULL, ?, ?, ?, ?, ?, ?)"
-Q_LIST_CARDS = "select cid, title, description from %s"
+Q_LIST_CARDS = "select id, title, description from %s"
 Q_LIST_SECTIONS = "select name from sqlite_master where type='table'"
 Q_REMOVE_CARD = "delete from %s where id=?"
 Q_REMOVE_SECTION = "drop table %s"
@@ -66,7 +66,8 @@ class Archivist:
     @Message(tags=["add-card"])
     def add_card(self, section, title, desc, content, tags, sender=None,
         locale="en"):
-        """ Add a new card to the given section.
+        """ Add a new card to the given section. Cards are added by sending
+            an email with a specific format.
 
             Timestamp is obtained automatically.
         """
@@ -174,7 +175,7 @@ class Archivist:
         return self.feedback(msg, sender)
 
     @Message(tags=["get-card"])
-    def get_card(self, section, cid, sender, method, to=None, locale="en"):
+    def get_card(self, section, idc, sender, method, to=None, locale="en"):
         """ Obtain information from a single card and send it to the user
             through the chosen communication method.
         """
@@ -187,7 +188,7 @@ class Archivist:
         try:
             conn, cur = self.connect()
 
-            cur.execute(Q_GET_CARD % section, (int(cid)))
+            cur.execute(Q_GET_CARD % section, (int(idc)))
 
             card = cur.fetchone()
 
@@ -212,7 +213,7 @@ class Archivist:
         return self.feedback(msg, to)
 
     @Message(tags=["get-cards"])
-    def get_cards(self, section, cids, sender, method, to=None, locale="en"):
+    def get_cards(self, section, idcs, sender, method, to=None, locale="en"):
         """ Obtain information from a list of cards and send it to the user
             through the chosen communication method.
         """
@@ -227,8 +228,8 @@ class Archivist:
 
             msg = ""
 
-            for cid in cids:
-                cur.execute(Q_GET_CARD % section, (int(cid)))
+            for idc in idcs:
+                cur.execute(Q_GET_CARD % section, (int(idc)))
 
                 card = cur.fetchone()
 
@@ -236,7 +237,7 @@ class Archivist:
                     msg += "%s\n" % self.build_card_msg(card)
                     continue
 
-                msg += _("Card %s not found") % cid
+                msg += _("Card %s not found") % idc
 
             cur.close()
             conn.close()
@@ -314,7 +315,7 @@ class Archivist:
         return self.feedback(msg, sender)
 
     @Message(tags=["remove-card"])
-    def remove_card(self, section, cid, sender=None, locale="en"):
+    def remove_card(self, section, idc, sender=None, locale="en"):
         """ Remove a card from a given section. """
         self.set_locale(locale)
 
@@ -329,7 +330,7 @@ class Archivist:
         try:
             conn, cur = self.connect()
 
-            cur.execute(Q_REMOVE_CARD % section, (int(cid)))
+            cur.execute(Q_REMOVE_CARD % section, (int(idc)))
 
             cur.close()
             conn.close()
@@ -337,7 +338,7 @@ class Archivist:
         except sqlite3.OperationalError as e:
             return self.feedback(e, sender)
 
-        return self.feedback(_("Removed card '%s'") % cid, sender)
+        return self.feedback(_("Removed card '%s'") % idc, sender)
 
     @Message(tags=["remove-section"])
     def remove_section(self, section, sender=None, locale="en"):
