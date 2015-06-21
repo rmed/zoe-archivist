@@ -46,12 +46,14 @@ USERS = Users()
 Q_CREATE = """create table %s (
         id integer primary key, title text unique, desc text, content text,
         tags text, modified timestamp, modified_by text)"""
-Q_DELETE = "delete from %s where id = ?"
-Q_DROP = "drop table %s"
 Q_EXISTS = "select name from sqlite_master where type='table' and name='?'"
 Q_GET_CARD = "select * from %s where id=?"
 Q_INSERT = "insert into %s values(NULL, ?, ?, ?, ?, ?, ?)"
 Q_LIST_CARDS = "select cid, title, description from %s"
+Q_LIST_SECTIONS = "select name from sqlite_master where type='table'"
+Q_REMOVE_CARD = "delete from %s where id=?"
+Q_REMOVE_SECTION = "drop table %s"
+Q_SEARCH = "select * from %s"
 
 REGEX_TABLE = re.compile("\A[a-zA-Z0-9_]+\Z")
 
@@ -162,9 +164,6 @@ class Archivist:
         msg = _("Created section '%s'") % name
         return self.feedback(msg, sender)
 
-    def remove_card(self, section, cid, sender=None):
-        pass
-
     @Message(tags=["get-card"])
     def get_card(self, section, cid, sender, method, to=None):
         """ Obtain information from a single card and send it to the user
@@ -274,12 +273,78 @@ class Archivist:
     @Message(tags=["list-sections"])
     def list_sections(self, sender):
         """ Show all the sections/tables in the archive. """
-        pass
+        try:
+            conn, cur = self.connect()
 
+            cur.execute(Q_LIST_SECTIONS)
+
+            sec = cur.fetchone()
+            msg = ""
+            while sec:
+                msg += "- %s" % sec
+
+                sec = cur.fetchone()
+
+            cur.close()
+            conn.close()
+
+        except sqlite3.OperationalError as e:
+            return self.feedback(e, sender)
+
+        if not msg:
+            msg = _("No sections found")
+
+        return self.feedback(msg, sender)
+
+    @Message(tags=["remove-card"])
+    def remove_card(self, section, cid, sender=None):
+        if not self.has_permissions(sender):
+            print(MSG_NO_PERM)
+            return self.feedback(MSG_NO_PERM, sender)
+
+        if not REGEX_TABLE.match(section):
+            msg = _("'%s' is not a valid section name") % section
+            return self.feedback(msg, sender)
+
+        try:
+            conn, cur = self.connect()
+
+            cur.execute(Q_REMOVE_CARD % section, (int(cid)))
+
+            cur.close()
+            conn.close()
+
+        except sqlite3.OperationalError as e:
+            return self.feedback(e, sender)
+
+        return self.feedback(_("Removed card '%s'") % cid, sender)
+
+    @Message(tags=["remove-section"])
     def remove_section(self, section, sender=None):
-        pass
+        """ Drop the section table from the database. """
+        if not self.has_permissions(sender):
+            print(MSG_NO_PERM)
+            return self.feedback(MSG_NO_PERM, sender)
 
-    def search(self, section, query, sender=None):
+        if not REGEX_TABLE.match(section):
+            msg = _("'%s' is not a valid section name") % section
+            return self.feedback(msg, sender)
+
+        try:
+            conn, cur = self.connect()
+
+            cur.execute(Q_REMOVE_SECTION % section)
+
+            cur.close()
+            conn.close()
+
+        except sqlite3.OperationalError as e:
+            return self.feedback(e, sender)
+
+        return self.feedback(_("Removed section '%s'") % section, sender)
+
+    @Message(tags=["search"])
+    def search(self, section, query, sender):
         pass
 
     def build_card_msg(self, card):
