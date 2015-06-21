@@ -43,7 +43,7 @@ my $sender;
 my $lang;
 my @strings;
 my @integers;
-my $user;
+my $mail;
 
 GetOptions("get"                   => \$get,
            "run"                   => \$run,
@@ -62,7 +62,7 @@ GetOptions("get"                   => \$get,
            "lang=s"                => \$lang,
            "string=s"              => \@strings,
            "integer=i"             => \@integers,
-           "user=s"                => \$user);
+           "mail=s"                => \$mail);
 
 if ($get) {
   &get;
@@ -95,9 +95,9 @@ if ($get) {
 #
 sub get {
   print("--bm --lang=en send me archive backup\n");
-  print("--bu --lang=en send archive backup to <user>\n");
+  print("--bu --lang=en send archive backup to <mail>\n");
   print("--cs --lang=en create /new section <string>\n");
-  print("--gc --lang=en get card/cards <integer> /from <string>\n");
+  print("--gc --lang=en show /me card/cards <integer> /from <string>\n");
   print("--gcm --lang=en send me card/cards <integer> /from <string>\n");
   print("--gcs --lang=en send card/cards <integer> /from <string> to <user>\n");
   print("--lc --lang=en list cards /in <string>\n");
@@ -107,9 +107,9 @@ sub get {
   print("--s --lang=en search /for <string> /in <string>\n");
 
   print("--bm --lang=es mándame backup /del archivo\n");
-  print("--bu --lang=es manda backup /del archivo a <user>\n");
+  print("--bu --lang=es manda backup /del archivo a <mail>\n");
   print("--cs --lang=es crea /nueva sección <string>\n");
-  print("--gc --lang=es coge tarjeta/tarjetas <integer> /de <string>\n");
+  print("--gc --lang=es muestra/muéstrame tarjeta/tarjetas <integer> /de <string>\n");
   print("--gcm --lang=es mándame tarjeta/tarjetas <integer> /de <string>\n");
   print("--gcs --lang=es manda tarjeta/tarjetas <integer> /de <string> a <user>\n");
   print("--lc --lang=es lista /de tarjetas /en <string>\n");
@@ -122,7 +122,7 @@ sub get {
 #
 # Create a dump of the database and send it to the sender
 #
-sub backup_user {
+sub backup_me {
   print("message dst=archivist&tag=backup&sender=$sender&locale=$lang\n");
 }
 
@@ -130,7 +130,7 @@ sub backup_user {
 # Create a dump of the database and send it to the specified user
 #
 sub backup_user {
-  print("message dst=archivist&tag=backup&dst_user=$user&sender=$sender&locale=$lang\n");
+  print("message dst=archivist&tag=backup&to=$mail&sender=$sender&locale=$lang\n");
 }
 
 #
@@ -143,14 +143,14 @@ sub create_sec {
 #
 # Get specified cards and send them to specified user by jabber
 #
-sub get_cards_snd {
+sub get_cards {
   print("message dst=archivist&tag=get-cards&section=$strings[0]&idcs=@integers&method=jabber&sender=$sender&locale=$lang\n");
 }
 
 #
 # Get specified cards and send them to sender by mail
 #
-sub get_cards_snd {
+sub get_cards_me {
   print("message dst=archivist&tag=get-cards&section=$strings[0]&idcs=@integers&method=mail&sender=$sender&locale=$lang\n");
 }
 
@@ -158,7 +158,7 @@ sub get_cards_snd {
 # Get specified cards and send them to specified user by mail
 #
 sub get_cards_snd {
-  print("message dst=archivist&tag=get-cards&section=$strings[0]&idcs=@integers&method=mail&to=$user&sender=$sender&locale=$lang\n");
+  print("message dst=archivist&tag=get-cards&section=$strings[0]&idcs=@integers&method=mail&to=$mail&sender=$sender&locale=$lang\n");
 }
 
 #

@@ -3,80 +3,81 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-21 14:30+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2015-06-22 00:15+0200\n"
+"PO-Revision-Date: 2015-06-22 00:16+0100\n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Last-Translator: Rafael Medina García <rafamedgar@gmail.com>\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.7.7\n"
 
-#: agents/archivist/archivist.py:40
+#: agents/archivist/archivist.py:42
 msgid "You don't have permissions to do that"
 msgstr ""
 
-#: agents/archivist/archivist.py:76 agents/archivist/archivist.py:152
-#: agents/archivist/archivist.py:174 agents/archivist/archivist.py:210
-#: agents/archivist/archivist.py:247 agents/archivist/archivist.py:307
-#: agents/archivist/archivist.py:331 agents/archivist/archivist.py:351
+#: agents/archivist/archivist.py:82 agents/archivist/archivist.py:162
+#: agents/archivist/archivist.py:186 agents/archivist/archivist.py:224
+#: agents/archivist/archivist.py:264 agents/archivist/archivist.py:329
+#: agents/archivist/archivist.py:357 agents/archivist/archivist.py:379
 #, python-format
 msgid "'%s' is not a valid section name"
 msgstr ""
 
-#: agents/archivist/archivist.py:99
+#: agents/archivist/archivist.py:105
 #, python-format
 msgid "Added card to section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:131
+#: agents/archivist/archivist.py:139
 #, python-format
 msgid "Archive dump - %s"
 msgstr ""
 
-#: agents/archivist/archivist.py:132
+#: agents/archivist/archivist.py:140
 #, python-format
 msgid "Sending dump to %s"
 msgstr ""
 
-#: agents/archivist/archivist.py:165
+#: agents/archivist/archivist.py:175
 #, python-format
 msgid "Created section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:188
+#: agents/archivist/archivist.py:200
 #, python-format
 msgid "Card not found in section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:227
+#: agents/archivist/archivist.py:241
 #, python-format
 msgid "Card %s not found"
 msgstr ""
 
-#: agents/archivist/archivist.py:270 agents/archivist/archivist.py:379
+#: agents/archivist/archivist.py:287 agents/archivist/archivist.py:409
 msgid "No cards found"
 msgstr ""
 
-#: agents/archivist/archivist.py:296
+#: agents/archivist/archivist.py:315
 msgid "No sections found"
-msgstr ""
-
-#: agents/archivist/archivist.py:321
-#, python-format
-msgid "Removed card '%s'"
 msgstr ""
 
 #: agents/archivist/archivist.py:345
 #, python-format
+msgid "Removed card '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:371
+#, python-format
 msgid "Removed section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:357
+#: agents/archivist/archivist.py:385
 msgid "No query specified"
 msgstr ""

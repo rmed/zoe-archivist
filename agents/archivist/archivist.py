@@ -24,6 +24,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import base64
 import gettext
 import os
 import re
@@ -51,7 +52,7 @@ Q_CREATE = """create table %s (
 Q_GET_CARD = "select * from %s where id=?"
 Q_GET_CARDS = "select * from %s"
 Q_INSERT = "insert into %s values(NULL, ?, ?, ?, ?, ?, ?)"
-Q_LIST_CARDS = "select id, title, description from %s"
+Q_LIST_CARDS = "select id, title, desc from %s"
 Q_LIST_SECTIONS = "select name from sqlite_master where type='table'"
 Q_REMOVE_CARD = "delete from %s where id=?"
 Q_REMOVE_SECTION = "drop table %s"
@@ -96,16 +97,16 @@ class Archivist:
             conn.close()
 
         except sqlite3.OperationalError as e:
-            return self.feedback(e, sender)
+            return self.feedback("Error: " + str(e), sender)
 
         except sqlite3.IntegrityError as e:
-            return self.feedback(e, sender)
+            return self.feedback("Error: " + str(e), sender)
 
         msg = _("Added card to section '%s'") % section
         return self.feedback(msg, sender)
 
     @Message(tags=["backup"])
-    def backup_archive(self, sender=None, dst_user=None, locale="en"):
+    def backup_archive(self, sender=None, to=None, locale="en"):
         """ Create a SQL dump file of the archive and send it to
             the provided mail or the sender's mail.
         """
@@ -115,8 +116,8 @@ class Archivist:
             self.logger.info("%s cannot backup archive" % sender)
             return self.feedback(MSG_NO_PERM, sender)
 
-        to = dst_user or sender or None
-        if not to:
+        dst = to or sender or None
+        if not dst:
             return
 
         conn, cur = self.connect()
@@ -136,12 +137,12 @@ class Archivist:
             b64, "application/octet-stream", "archive_%s.dump" % tstamp)
 
         subject = _("Archive dump - %s") % tstamp
-        msg = _("Sending dump to %s") % to
+        msg = _("Sending dump to %s") % dst
 
         # Send dump to user
         return (
-            self.feedback(msg, to),
-            self.feedback(None, to, subject, attachment)
+            self.feedback(msg, dst),
+            self.feedback(None, dst, subject, attachment)
         )
 
     @Message(tags=["new-section"])
@@ -169,7 +170,7 @@ class Archivist:
             conn.close()
 
         except sqlite3.OperationalError as e:
-            return self.feedback(e, sender)
+            return self.feedback("Error: " + str(e), sender)
 
         msg = _("Created section '%s'") % name
         return self.feedback(msg, sender)
@@ -188,7 +189,7 @@ class Archivist:
         try:
             conn, cur = self.connect()
 
-            cur.execute(Q_GET_CARD % section, (int(idc)))
+            cur.execute(Q_GET_CARD % section, (idc, ))
 
             card = cur.fetchone()
 
@@ -200,7 +201,7 @@ class Archivist:
                 return self.feedback(msg, sender)
 
         except sqlite3.OperationalError as e:
-            return self.feedback(e, sender)
+            return self.feedback("Error: " + str(e), sender)
 
         msg = self.build_card_msg(card)
 
@@ -228,28 +229,29 @@ class Archivist:
 
             msg = ""
 
-            for idc in idcs:
-                cur.execute(Q_GET_CARD % section, (int(idc)))
+            for idc in idcs.split(" "):
+                cur.execute(Q_GET_CARD % section, (idc, ))
 
                 card = cur.fetchone()
 
                 if card:
-                    msg += "%s\n" % self.build_card_msg(card)
+                    msg += "%s\n\n" % self.build_card_msg(card)
                     continue
 
                 msg += _("Card %s not found") % idc
+                msg += "\n"
 
             cur.close()
             conn.close()
 
         except sqlite3.OperationalError as e:
-            return self.feedback(e, sender)
+            return self.feedback("Error: " + str(e), sender)
 
         if not to:
             to = sender
 
         if method == "mail":
-            return self.feedback(msg, to, subject)
+            return self.feedback(msg, to, "Archivist")
 
         return self.feedback(msg, to)
 
@@ -270,8 +272,8 @@ class Archivist:
             card = cur.fetchone()
             msg = ""
             while card:
-                msg += "- (%d) %s: %s\n" % (
-                    card["id"], card["title"], card["description"])
+                msg += "- [%d] %s: %s\n" % (
+                    card["id"], card["title"], card["desc"])
 
                 card = cur.fetchone()
 
@@ -279,7 +281,7 @@ class Archivist:
             conn.close()
 
         except sqlite3.OperationalError as e:
-            return self.feedback(e, sender)
+            return self.feedback("Error: " + str(e), sender)
 
         if not msg:
             msg = _("No cards found")
@@ -307,7 +309,7 @@ class Archivist:
             conn.close()
 
         except sqlite3.OperationalError as e:
-            return self.feedback(e, sender)
+            return self.feedback("Error: " + str(e), sender)
 
         if not msg:
             msg = _("No sections found")
@@ -330,13 +332,15 @@ class Archivist:
         try:
             conn, cur = self.connect()
 
-            cur.execute(Q_REMOVE_CARD % section, (int(idc)))
+            cur.execute(Q_REMOVE_CARD % section, (idc, ))
+
+            conn.commit()
 
             cur.close()
             conn.close()
 
         except sqlite3.OperationalError as e:
-            return self.feedback(e, sender)
+            return self.feedback("Error: " + str(e), sender)
 
         return self.feedback(_("Removed card '%s'") % idc, sender)
 
@@ -362,7 +366,7 @@ class Archivist:
             conn.close()
 
         except sqlite3.OperationalError as e:
-            return self.feedback(e, sender)
+            return self.feedback("Error: " + str(e), sender)
 
         return self.feedback(_("Removed section '%s'") % section, sender)
 
@@ -390,14 +394,16 @@ class Archivist:
             card = cur.fetchone()
             while card:
                 if self.is_relevant(s_terms, card):
-                    result += "- (%d) %s: %s\n" % (
-                    card["id"], card["title"], card["description"])
+                    result += "- [%d] %s: %s\n" % (
+                    card["id"], card["title"], card["desc"])
+
+                card = cur.fetchone()
 
             cur.close()
             conn.close()
 
         except sqlite3.OperationalError as e:
-            return self.feedback(e, sender)
+            return self.feedback("Error: " + str(e), sender)
 
         if not result:
             result = _("No cards found")
@@ -408,7 +414,7 @@ class Archivist:
         """ Format the card's information for easier reading. """
         msg = "Card %d\n---------\n" % card["id"]
         msg += "Title: %s\n" % card["title"]
-        msg += "Description: %s\n" % card["description"]
+        msg += "Description: %s\n" % card["desc"]
         msg += "Tags: %s\n" % card["tags"]
         msg += "Last modified <%s> by %s\n\n" % (
             str(card["modified"]), card["modified_by"])
@@ -418,6 +424,7 @@ class Archivist:
 
     def connect(self):
         conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
         cur = conn.cursor()
 
         return conn, cur
@@ -435,7 +442,6 @@ class Archivist:
 
         to_send = {
             "dst": "relay",
-            "tag": "relay",
             "to": user
         }
 
@@ -466,7 +472,7 @@ class Archivist:
         """ Determine whether a card is relevant to a given search query. """
         # Get card information for comparison
         s_card = "%s %s %s %s" % (
-            str(card["id"]), card["title"], card["description"], card["tags"])
+            str(card["id"]), card["title"], card["desc"], card["tags"])
         c_terms = set([t.lower() for t in s_card.split()])
 
         common = set()
