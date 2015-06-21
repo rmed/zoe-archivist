@@ -1,0 +1,82 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-06-21 14:30+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: agents/archivist/archivist.py:40
+msgid "You don't have permissions to do that"
+msgstr ""
+
+#: agents/archivist/archivist.py:76 agents/archivist/archivist.py:152
+#: agents/archivist/archivist.py:174 agents/archivist/archivist.py:210
+#: agents/archivist/archivist.py:247 agents/archivist/archivist.py:307
+#: agents/archivist/archivist.py:331 agents/archivist/archivist.py:351
+#, python-format
+msgid "'%s' is not a valid section name"
+msgstr ""
+
+#: agents/archivist/archivist.py:99
+#, python-format
+msgid "Added card to section '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:131
+#, python-format
+msgid "Archive dump - %s"
+msgstr ""
+
+#: agents/archivist/archivist.py:132
+#, python-format
+msgid "Sending dump to %s"
+msgstr ""
+
+#: agents/archivist/archivist.py:165
+#, python-format
+msgid "Created section '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:188
+#, python-format
+msgid "Card not found in section '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:227
+#, python-format
+msgid "Card %s not found"
+msgstr ""
+
+#: agents/archivist/archivist.py:270 agents/archivist/archivist.py:379
+msgid "No cards found"
+msgstr ""
+
+#: agents/archivist/archivist.py:296
+msgid "No sections found"
+msgstr ""
+
+#: agents/archivist/archivist.py:321
+#, python-format
+msgid "Removed card '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:345
+#, python-format
+msgid "Removed section '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:357
+msgid "No query specified"
+msgstr ""

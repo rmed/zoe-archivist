@@ -1,0 +1,83 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Zoe Archivist 0.1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-06-21 14:30+0200\n"
+"PO-Revision-Date: 2015-06-21 14:33+0100\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Last-Translator: Rafael Medina García <rafamedgar@gmail.com>\n"
+"Language-Team:  <rafamedgar@gmail.com>\n"
+"X-Generator: Poedit 1.7.7\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: es\n"
+
+#: agents/archivist/archivist.py:40
+msgid "You don't have permissions to do that"
+msgstr "No tienes permisos para hacer eso"
+
+#: agents/archivist/archivist.py:76 agents/archivist/archivist.py:152
+#: agents/archivist/archivist.py:174 agents/archivist/archivist.py:210
+#: agents/archivist/archivist.py:247 agents/archivist/archivist.py:307
+#: agents/archivist/archivist.py:331 agents/archivist/archivist.py:351
+#, python-format
+msgid "'%s' is not a valid section name"
+msgstr "'%s' no es un nombre de sección válido"
+
+#: agents/archivist/archivist.py:99
+#, python-format
+msgid "Added card to section '%s'"
+msgstr "Tarjeta añadida a la sección '%s'"
+
+#: agents/archivist/archivist.py:131
+#, python-format
+msgid "Archive dump - %s"
+msgstr "Dump de archivo - %s"
+
+#: agents/archivist/archivist.py:132
+#, python-format
+msgid "Sending dump to %s"
+msgstr "Enviando dump a %s"
+
+#: agents/archivist/archivist.py:165
+#, python-format
+msgid "Created section '%s'"
+msgstr "Sección '%s' creada"
+
+#: agents/archivist/archivist.py:188
+#, python-format
+msgid "Card not found in section '%s'"
+msgstr "Tarjeta no encontrada en la sección '%s'"
+
+#: agents/archivist/archivist.py:227
+#, python-format
+msgid "Card %s not found"
+msgstr "Tarjeta %s no encontrada"
+
+#: agents/archivist/archivist.py:270 agents/archivist/archivist.py:379
+msgid "No cards found"
+msgstr "No se han encontrado tarjetas"
+
+#: agents/archivist/archivist.py:296
+msgid "No sections found"
+msgstr "No se han encontrado secciones"
+
+#: agents/archivist/archivist.py:321
+#, python-format
+msgid "Removed card '%s'"
+msgstr "Tarjeta '%s' eliminada"
+
+#: agents/archivist/archivist.py:345
+#, python-format
+msgid "Removed section '%s'"
+msgstr "Sección '%s' eliminada"
+
+#: agents/archivist/archivist.py:357
+msgid "No query specified"
+msgstr "No se han especificado términos de búsqueda"

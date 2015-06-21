@@ -96,7 +96,7 @@ class Archivist:
         except sqlite3.IntegrityError as e:
             return self.feedback(e, sender)
 
-        msg = _("Added card '%s' to section '%s'") % (title, section)
+        msg = _("Added card to section '%s'") % section
         return self.feedback(msg, sender)
 
     @Message(tags=["backup"])
@@ -185,7 +185,7 @@ class Archivist:
             conn.close()
 
             if not card:
-                msg = _("Card %s not found in section '%s'") % (cid, section)
+                msg = _("Card not found in section '%s'") % section
                 return self.feedback(msg, sender)
 
         except sqlite3.OperationalError as e:
