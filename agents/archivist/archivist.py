@@ -29,6 +29,7 @@ import re
 import sqlite3
 import zoe
 from datetime import datetime
+from fuzzywuzzy import fuzz
 from os import environ as env
 from os.path import join as path
 from zoe.deco import *
@@ -46,8 +47,8 @@ USERS = Users()
 Q_CREATE = """create table %s (
         id integer primary key, title text unique, desc text, content text,
         tags text, modified timestamp, modified_by text)"""
-Q_EXISTS = "select name from sqlite_master where type='table' and name='?'"
 Q_GET_CARD = "select * from %s where id=?"
+Q_GET_CARDS = "select * from %s"
 Q_INSERT = "insert into %s values(NULL, ?, ?, ?, ?, ?, ?)"
 Q_LIST_CARDS = "select cid, title, description from %s"
 Q_LIST_SECTIONS = "select name from sqlite_master where type='table'"
@@ -345,7 +346,39 @@ class Archivist:
 
     @Message(tags=["search"])
     def search(self, section, query, sender):
-        pass
+        """ Traverse a section and find cards relevant to the query. """
+        if not REGEX_TABLE.match(section):
+            msg = _("'%s' is not a valid section name") % section
+            return self.feedback(msg, sender)
+
+        s_terms = set([t.lower() for t in query.split()])
+
+        if not s_terms:
+            return self.feedback(_("No query specified"), sender)
+
+        result = ""
+
+        try:
+            conn, cur = self.connect()
+
+            cur.execute(Q_GET_CARDS % section)
+
+            card = cur.fetchone()
+            while card:
+                if self.is_relevant(s_terms, card):
+                    result += "- (%d) %s: %s\n" % (
+                    card["id"], card["title"], card["description"])
+
+            cur.close()
+            conn.close()
+
+        except sqlite3.OperationalError as e:
+            return self.feedback(e, sender)
+
+        if not result:
+            result = _("No cards found")
+
+        return self.feedback(result, sender)
 
     def build_card_msg(self, card):
         """ Format the card's information for easier reading. """
@@ -401,6 +434,27 @@ class Archivist:
         """
         # No user, manual commands from terminal
         if not user or user in USERS.membersof("archivists"):
+            return True
+
+        return False
+
+    def is_relevant(self, query, card):
+        """ Determine whether a card is relevant to a given search query. """
+        # Get card information for comparison
+        s_card = "%s %s %s %s" % (
+            str(card["id"]), card["title"], card["description"], card["tags"])
+        c_terms = set([t.lower() for t in s_card.split()])
+
+        common = set()
+
+        for c_term in c_terms:
+            # Check each search term with those from card
+            for s_term in query:
+                if fuzz.partial_ratio(s_term, c_term) >= 80:
+                    common.add(s_term)
+                    break
+
+        if int((len(common) / len(query)) * 100) >= 50:
             return True
 
         return False
