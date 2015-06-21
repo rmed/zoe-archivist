@@ -69,7 +69,7 @@ class Archivist:
             Timestamp is obtained automatically.
         """
         if not self.has_permissions(sender):
-            print(MSG_NO_PERM)
+            self.logger.info("%s cannot add cards" % sender)
             return self.feedback(MSG_NO_PERM, sender)
 
         if not REGEX_TABLE.match(section):
@@ -105,7 +105,7 @@ class Archivist:
             the provided mail or the sender's mail.
         """
         if not self.has_permissions(sender):
-            print(MSG_NO_PERM)
+            self.logger.info("%s cannot backup archive" % sender)
             return self.feedback(MSG_NO_PERM, sender)
 
         to = dst_user or sender or None
@@ -145,7 +145,7 @@ class Archivist:
             beforehand to prevent injections.
         """
         if not self.has_permissions(sender):
-            print(MSG_NO_PERM)
+            self.logger.info("%s cannot create sections" % sender)
             return self.feedback(MSG_NO_PERM, sender)
 
         if not REGEX_TABLE.match(name):
@@ -300,7 +300,7 @@ class Archivist:
     @Message(tags=["remove-card"])
     def remove_card(self, section, cid, sender=None):
         if not self.has_permissions(sender):
-            print(MSG_NO_PERM)
+            self.logger.info("%s cannot remove cards" % sender)
             return self.feedback(MSG_NO_PERM, sender)
 
         if not REGEX_TABLE.match(section):
@@ -324,7 +324,7 @@ class Archivist:
     def remove_section(self, section, sender=None):
         """ Drop the section table from the database. """
         if not self.has_permissions(sender):
-            print(MSG_NO_PERM)
+            self.logger.info("%s cannot remove sections" % sender)
             return self.feedback(MSG_NO_PERM, sender)
 
         if not REGEX_TABLE.match(section):
