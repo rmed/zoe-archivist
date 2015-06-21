@@ -63,11 +63,14 @@ REGEX_TABLE = re.compile("\A[a-zA-Z0-9_]+\Z")
 class Archivist:
 
     @Message(tags=["add-card"])
-    def add_card(self, section, title, desc, content, tags, sender=None):
+    def add_card(self, section, title, desc, content, tags, sender=None,
+        locale="en"):
         """ Add a new card to the given section.
 
             Timestamp is obtained automatically.
         """
+        self.set_locale(locale)
+
         if not self.has_permissions(sender):
             self.logger.info("%s cannot add cards" % sender)
             return self.feedback(MSG_NO_PERM, sender)
@@ -100,10 +103,12 @@ class Archivist:
         return self.feedback(msg, sender)
 
     @Message(tags=["backup"])
-    def backup_archive(self, sender=None, dst_user=None):
+    def backup_archive(self, sender=None, dst_user=None, locale="en"):
         """ Create a SQL dump file of the archive and send it to
             the provided mail or the sender's mail.
         """
+        self.set_locale(locale)
+
         if not self.has_permissions(sender):
             self.logger.info("%s cannot backup archive" % sender)
             return self.feedback(MSG_NO_PERM, sender)
@@ -138,12 +143,14 @@ class Archivist:
         )
 
     @Message(tags=["new-section"])
-    def create_section(self, name, sender=None):
+    def create_section(self, name, sender=None, locale="en"):
         """ Create a new table in the database if it does not exist.
 
             The name of the table is dynamic, hence it must be checked
             beforehand to prevent injections.
         """
+        self.set_locale(locale)
+
         if not self.has_permissions(sender):
             self.logger.info("%s cannot create sections" % sender)
             return self.feedback(MSG_NO_PERM, sender)
@@ -166,10 +173,12 @@ class Archivist:
         return self.feedback(msg, sender)
 
     @Message(tags=["get-card"])
-    def get_card(self, section, cid, sender, method, to=None):
+    def get_card(self, section, cid, sender, method, to=None, locale="en"):
         """ Obtain information from a single card and send it to the user
             through the chosen communication method.
         """
+        self.set_locale(locale)
+
         if not REGEX_TABLE.match(section):
             msg = _("'%s' is not a valid section name") % section
             return self.feedback(msg, sender)
@@ -202,10 +211,12 @@ class Archivist:
         return self.feedback(msg, to)
 
     @Message(tags=["get-cards"])
-    def get_cards(self, section, cids, sender, method, to=None):
+    def get_cards(self, section, cids, sender, method, to=None, locale="en"):
         """ Obtain information from a list of cards and send it to the user
             through the chosen communication method.
         """
+        self.set_locale(locale)
+
         if not REGEX_TABLE.match(section):
             msg = _("'%s' is not a valid section name") % section
             return self.feedback(msg, sender)
@@ -241,8 +252,10 @@ class Archivist:
         return self.feedback(msg, to)
 
     @Message(tags=["list-cards"])
-    def list_cards(self, section, sender):
+    def list_cards(self, section, sender, locale="en"):
         """ List all the cards in a given section. """
+        self.set_locale(locale)
+
         if not REGEX_TABLE.match(section):
             msg = _("'%s' is not a valid section name") % section
             return self.feedback(msg, sender)
@@ -272,8 +285,10 @@ class Archivist:
         return self.feedback(msg, sender)
 
     @Message(tags=["list-sections"])
-    def list_sections(self, sender):
+    def list_sections(self, sender, locale="en"):
         """ Show all the sections/tables in the archive. """
+        self.set_locale(locale)
+
         try:
             conn, cur = self.connect()
 
@@ -298,7 +313,10 @@ class Archivist:
         return self.feedback(msg, sender)
 
     @Message(tags=["remove-card"])
-    def remove_card(self, section, cid, sender=None):
+    def remove_card(self, section, cid, sender=None, locale="en"):
+        """ Remove a card from a given section. """
+        self.set_locale(locale)
+
         if not self.has_permissions(sender):
             self.logger.info("%s cannot remove cards" % sender)
             return self.feedback(MSG_NO_PERM, sender)
@@ -321,8 +339,10 @@ class Archivist:
         return self.feedback(_("Removed card '%s'") % cid, sender)
 
     @Message(tags=["remove-section"])
-    def remove_section(self, section, sender=None):
+    def remove_section(self, section, sender=None, locale="en"):
         """ Drop the section table from the database. """
+        self.set_locale(locale)
+
         if not self.has_permissions(sender):
             self.logger.info("%s cannot remove sections" % sender)
             return self.feedback(MSG_NO_PERM, sender)
@@ -345,8 +365,10 @@ class Archivist:
         return self.feedback(_("Removed section '%s'") % section, sender)
 
     @Message(tags=["search"])
-    def search(self, section, query, sender):
+    def search(self, section, query, sender, locale="en"):
         """ Traverse a section and find cards relevant to the query. """
+        self.set_locale(locale)
+
         if not REGEX_TABLE.match(section):
             msg = _("'%s' is not a valid section name") % section
             return self.feedback(msg, sender)
@@ -458,3 +480,13 @@ class Archivist:
             return True
 
         return False
+
+    def set_locale(self, locale):
+        """ Set the locale for messages based on the locale of the sender.
+
+            if no locale is povided, English (en) is used by default.
+        """
+        lang = gettext.translation("archivist", localedir=LOCALEDIR,
+            languages=[locale,])
+
+        lang.install()
