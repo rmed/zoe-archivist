@@ -7,77 +7,87 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zoe Archivist 0.1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-21 14:30+0200\n"
-"PO-Revision-Date: 2015-06-21 14:33+0100\n"
+"POT-Creation-Date: 2015-06-28 20:53+0200\n"
+"PO-Revision-Date: 2015-06-28 20:55+0100\n"
+"Last-Translator: Rafael Medina García <rafamedgar@gmail.com>\n"
+"Language-Team:  <rafamedgar@gmail.com>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Last-Translator: Rafael Medina García <rafamedgar@gmail.com>\n"
-"Language-Team:  <rafamedgar@gmail.com>\n"
 "X-Generator: Poedit 1.7.7\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: es\n"
 
-#: agents/archivist/archivist.py:40
+#: agents/archivist/archivist.py:42
 msgid "You don't have permissions to do that"
 msgstr "No tienes permisos para hacer eso"
 
-#: agents/archivist/archivist.py:76 agents/archivist/archivist.py:152
-#: agents/archivist/archivist.py:174 agents/archivist/archivist.py:210
-#: agents/archivist/archivist.py:247 agents/archivist/archivist.py:307
-#: agents/archivist/archivist.py:331 agents/archivist/archivist.py:351
+#: agents/archivist/archivist.py:84 agents/archivist/archivist.py:161
+#: agents/archivist/archivist.py:188 agents/archivist/archivist.py:228
+#: agents/archivist/archivist.py:269 agents/archivist/archivist.py:308
+#: agents/archivist/archivist.py:374 agents/archivist/archivist.py:402
+#: agents/archivist/archivist.py:424
 #, python-format
 msgid "'%s' is not a valid section name"
 msgstr "'%s' no es un nombre de sección válido"
 
-#: agents/archivist/archivist.py:99
+#: agents/archivist/archivist.py:107
 #, python-format
 msgid "Added card to section '%s'"
 msgstr "Tarjeta añadida a la sección '%s'"
 
-#: agents/archivist/archivist.py:131
-#, python-format
-msgid "Archive dump - %s"
-msgstr "Dump de archivo - %s"
-
-#: agents/archivist/archivist.py:132
+#: agents/archivist/archivist.py:142
 #, python-format
 msgid "Sending dump to %s"
 msgstr "Enviando dump a %s"
 
-#: agents/archivist/archivist.py:165
+#: agents/archivist/archivist.py:144
+#, python-format
+msgid "Archive dump - %s"
+msgstr "Dump de archivo - %s"
+
+#: agents/archivist/archivist.py:174
 #, python-format
 msgid "Created section '%s'"
 msgstr "Sección '%s' creada"
 
-#: agents/archivist/archivist.py:188
+#: agents/archivist/archivist.py:217
+#, python-format
+msgid "Modified card '%s'"
+msgstr "Tarjeta '%s' modificada"
+
+#: agents/archivist/archivist.py:242
 #, python-format
 msgid "Card not found in section '%s'"
 msgstr "Tarjeta no encontrada en la sección '%s'"
 
-#: agents/archivist/archivist.py:227
+#: agents/archivist/archivist.py:254
+msgid "Sending..."
+msgstr "Enviando..."
+
+#: agents/archivist/archivist.py:285
 #, python-format
 msgid "Card %s not found"
 msgstr "Tarjeta %s no encontrada"
 
-#: agents/archivist/archivist.py:270 agents/archivist/archivist.py:379
+#: agents/archivist/archivist.py:331 agents/archivist/archivist.py:453
 msgid "No cards found"
 msgstr "No se han encontrado tarjetas"
 
-#: agents/archivist/archivist.py:296
+#: agents/archivist/archivist.py:359
 msgid "No sections found"
 msgstr "No se han encontrado secciones"
 
-#: agents/archivist/archivist.py:321
+#: agents/archivist/archivist.py:389
 #, python-format
 msgid "Removed card '%s'"
 msgstr "Tarjeta '%s' eliminada"
 
-#: agents/archivist/archivist.py:345
+#: agents/archivist/archivist.py:415
 #, python-format
 msgid "Removed section '%s'"
 msgstr "Sección '%s' eliminada"
 
-#: agents/archivist/archivist.py:357
+#: agents/archivist/archivist.py:429
 msgid "No query specified"
 msgstr "No se han especificado términos de búsqueda"

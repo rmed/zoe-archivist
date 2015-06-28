@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-22 00:15+0200\n"
-"PO-Revision-Date: 2015-06-22 00:16+0100\n"
+"POT-Creation-Date: 2015-06-28 20:53+0200\n"
+"PO-Revision-Date: 2015-06-28 20:54+0100\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,62 +22,72 @@ msgstr ""
 msgid "You don't have permissions to do that"
 msgstr ""
 
-#: agents/archivist/archivist.py:82 agents/archivist/archivist.py:162
-#: agents/archivist/archivist.py:186 agents/archivist/archivist.py:224
-#: agents/archivist/archivist.py:264 agents/archivist/archivist.py:329
-#: agents/archivist/archivist.py:357 agents/archivist/archivist.py:379
+#: agents/archivist/archivist.py:84 agents/archivist/archivist.py:161
+#: agents/archivist/archivist.py:188 agents/archivist/archivist.py:228
+#: agents/archivist/archivist.py:269 agents/archivist/archivist.py:308
+#: agents/archivist/archivist.py:374 agents/archivist/archivist.py:402
+#: agents/archivist/archivist.py:424
 #, python-format
 msgid "'%s' is not a valid section name"
 msgstr ""
 
-#: agents/archivist/archivist.py:105
+#: agents/archivist/archivist.py:107
 #, python-format
 msgid "Added card to section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:139
-#, python-format
-msgid "Archive dump - %s"
-msgstr ""
-
-#: agents/archivist/archivist.py:140
+#: agents/archivist/archivist.py:142
 #, python-format
 msgid "Sending dump to %s"
 msgstr ""
 
-#: agents/archivist/archivist.py:175
+#: agents/archivist/archivist.py:144
+#, python-format
+msgid "Archive dump - %s"
+msgstr ""
+
+#: agents/archivist/archivist.py:174
 #, python-format
 msgid "Created section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:200
+#: agents/archivist/archivist.py:217
+#, python-format
+msgid "Modified card '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:242
 #, python-format
 msgid "Card not found in section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:241
+#: agents/archivist/archivist.py:254
+msgid "Sending..."
+msgstr ""
+
+#: agents/archivist/archivist.py:285
 #, python-format
 msgid "Card %s not found"
 msgstr ""
 
-#: agents/archivist/archivist.py:287 agents/archivist/archivist.py:409
+#: agents/archivist/archivist.py:331 agents/archivist/archivist.py:453
 msgid "No cards found"
 msgstr ""
 
-#: agents/archivist/archivist.py:315
+#: agents/archivist/archivist.py:359
 msgid "No sections found"
 msgstr ""
 
-#: agents/archivist/archivist.py:345
+#: agents/archivist/archivist.py:389
 #, python-format
 msgid "Removed card '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:371
+#: agents/archivist/archivist.py:415
 #, python-format
 msgid "Removed section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:385
+#: agents/archivist/archivist.py:429
 msgid "No query specified"
 msgstr ""
