@@ -5,3 +5,6 @@
 # to the agent's directory
 pip install -t ${ZOE_HOME}/agents/archivist fuzzywuzzy
 pip install -t ${ZOE_HOME}/agents/archivist python-Levenshtein
+
+# Create directory
+mkdir -p ${ZOE_HOME}/etc/archivist
