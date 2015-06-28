@@ -44,11 +44,13 @@ MSG_NO_PERM = _("You don't have permissions to do that")
 DB_PATH = path(env["ZOE_HOME"], "etc", "archivist", "archive.db")
 LOCALEDIR = path(env["ZOE_HOME"], "locale")
 USERS = Users()
+ZOE_LOCALE = env["ZOE_LOCALE"] or "en"
 
 # Mind table names and prevent sql injection
 Q_CREATE = """create table %s (
         id integer primary key, title text unique, desc text, content text,
         tags text, modified timestamp, modified_by text)"""
+Q_EDIT_CARD = "update %s set title=?, desc=?, content=?, tags=?, modified=?, modified_by=? where id=?"
 Q_GET_CARD = "select * from %s where id=?"
 Q_GET_CARDS = "select * from %s"
 Q_INSERT = "insert into %s values(NULL, ?, ?, ?, ?, ?, ?)"
@@ -65,22 +67,21 @@ REGEX_TABLE = re.compile("\A[a-zA-Z0-9_]+\Z")
 class Archivist:
 
     @Message(tags=["add-card"])
-    def add_card(self, section, title, desc, content, tags, sender=None,
-        locale="en"):
+    def add_card(self, section, title, desc, content, tags, sender=None):
         """ Add a new card to the given section. Cards are added by sending
             an email with a specific format.
 
             Timestamp is obtained automatically.
         """
-        self.set_locale(locale)
+        self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot add cards" % sender)
             return self.feedback(MSG_NO_PERM, sender)
 
         if not REGEX_TABLE.match(section):
-            msg = _("'%s' is not a valid section name") % section
-            return self.feedback(msg, sender)
+            return self.feedback(
+                _("'%s' is not a valid section name") % section, sender)
 
         try:
             conn, cur = self.connect()
@@ -89,7 +90,8 @@ class Archivist:
             user = sender or "UNKNOWN"
 
             cur.execute(Q_INSERT % section, (
-                title, desc, content, tags, tstamp, user))
+                title, desc, content.replace('_NL_', '\n'),
+                tags, tstamp, user))
 
             conn.commit()
 
@@ -102,15 +104,14 @@ class Archivist:
         except sqlite3.IntegrityError as e:
             return self.feedback("Error: " + str(e), sender)
 
-        msg = _("Added card to section '%s'") % section
-        return self.feedback(msg, sender)
+        return self.feedback(_("Added card to section '%s'") % section, sender)
 
     @Message(tags=["backup"])
-    def backup_archive(self, sender=None, to=None, locale="en"):
+    def backup_archive(self, sender=None, to=None):
         """ Create a SQL dump file of the archive and send it to
             the provided mail or the sender's mail.
         """
-        self.set_locale(locale)
+        self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot backup archive" % sender)
@@ -136,23 +137,21 @@ class Archivist:
         attachment = zoe.Attachment(
             b64, "application/octet-stream", "archive_%s.dump" % tstamp)
 
-        subject = _("Archive dump - %s") % tstamp
-        msg = _("Sending dump to %s") % dst
-
         # Send dump to user
         return (
-            self.feedback(msg, dst),
-            self.feedback(None, dst, subject, attachment)
+            self.feedback(_("Sending dump to %s") % dst, dst),
+            self.feedback(None, dst,
+                _("Archive dump - %s") % tstamp, attachment)
         )
 
     @Message(tags=["new-section"])
-    def create_section(self, name, sender=None, locale="en"):
+    def create_section(self, name, sender=None):
         """ Create a new table in the database if it does not exist.
 
             The name of the table is dynamic, hence it must be checked
             beforehand to prevent injections.
         """
-        self.set_locale(locale)
+        self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot create sections" % sender)
@@ -172,19 +171,61 @@ class Archivist:
         except sqlite3.OperationalError as e:
             return self.feedback("Error: " + str(e), sender)
 
-        msg = _("Created section '%s'") % name
-        return self.feedback(msg, sender)
+        return self.feedback(_("Created section '%s'") % name, sender)
+
+    @Message(tags=["edit-card"])
+    def edit_card(self, section, idc, title=None, desc=None,
+        content=None, tags=None, sender=None):
+        """ Modify an existing card. """
+        self.set_locale(sender)
+
+        if not self.has_permissions(sender):
+            self.logger.info("%s cannot create sections" % sender)
+            return self.feedback(MSG_NO_PERM, sender)
+
+        if not REGEX_TABLE.match(section):
+            return self.feedback(
+                _("'%s' is not a valid section name") % section, sender)
+
+        try:
+            conn, cur = self.connect()
+
+            # Obtain current information
+            cur.execute(Q_GET_CARD % section, (idc, ))
+            card = cur.fetchone()
+
+            # New information
+            data = (
+                title or card["title"],
+                desc or card["desc"],
+                content.replace('_NL_', '\n') if content else card["content"],
+                tags or card["tags"],
+                datetime.now(),
+                sender,
+                idc
+            )
+
+            cur.execute(Q_EDIT_CARD % section, data)
+            conn.commit()
+
+            cur.close()
+            conn.close()
+
+        except sqlite3.OperationalError as e:
+            return self.feedback("Error: " + str(e), sender)
+
+        return self.feedback(_("Modified card '%s'") % idc, sender)
 
     @Message(tags=["get-card"])
-    def get_card(self, section, idc, sender, method, to=None, locale="en"):
+    def get_card(self, section, idc, sender, method, to=None):
         """ Obtain information from a single card and send it to the user
             through the chosen communication method.
         """
-        self.set_locale(locale)
+        self.set_locale(sender)
 
         if not REGEX_TABLE.match(section):
-            msg = _("'%s' is not a valid section name") % section
-            return self.feedback(msg, sender)
+            return self.feedback(
+                _("'%s' is not a valid section name") % section, sender)
 
         try:
             conn, cur = self.connect()
@@ -197,8 +238,8 @@ class Archivist:
             conn.close()
 
             if not card:
-                msg = _("Card not found in section '%s'") % section
-                return self.feedback(msg, sender)
+                return self.feedback(
+                    _("Card not found in section '%s'") % section, sender)
 
         except sqlite3.OperationalError as e:
             return self.feedback("Error: " + str(e), sender)
@@ -209,20 +250,23 @@ class Archivist:
             to = sender
 
         if method == "mail":
-            return self.feedback(msg, to, subject)
+            return (
+                self.feedback(_("Sending..."), sender),
+                self.feedback(msg, to, subject)
+            )
 
         return self.feedback(msg, to)
 
     @Message(tags=["get-cards"])
-    def get_cards(self, section, idcs, sender, method, to=None, locale="en"):
+    def get_cards(self, section, idcs, sender, method, to=None):
         """ Obtain information from a list of cards and send it to the user
             through the chosen communication method.
         """
-        self.set_locale(locale)
+        self.set_locale(sender)
 
         if not REGEX_TABLE.match(section):
-            msg = _("'%s' is not a valid section name") % section
-            return self.feedback(msg, sender)
+            return self.feedback(
+                _("'%s' is not a valid section name") % section, sender)
 
         try:
             conn, cur = self.connect()
@@ -256,9 +300,9 @@ class Archivist:
         return self.feedback(msg, to)
 
     @Message(tags=["list-cards"])
-    def list_cards(self, section, sender, locale="en"):
+    def list_cards(self, section, sender):
         """ List all the cards in a given section. """
-        self.set_locale(locale)
+        self.set_locale(sender)
 
         if not REGEX_TABLE.match(section):
             msg = _("'%s' is not a valid section name") % section
@@ -289,9 +333,9 @@ class Archivist:
         return self.feedback(msg, sender)
 
     @Message(tags=["list-sections"])
-    def list_sections(self, sender, locale="en"):
+    def list_sections(self, sender):
         """ Show all the sections/tables in the archive. """
-        self.set_locale(locale)
+        self.set_locale(sender)
 
         try:
             conn, cur = self.connect()
@@ -301,7 +345,7 @@ class Archivist:
             sec = cur.fetchone()
             msg = ""
             while sec:
-                msg += "- %s" % sec
+                msg += "- %s" % sec["name"]
 
                 sec = cur.fetchone()
 
@@ -317,17 +361,17 @@ class Archivist:
         return self.feedback(msg, sender)
 
     @Message(tags=["remove-card"])
-    def remove_card(self, section, idc, sender=None, locale="en"):
+    def remove_card(self, section, idc, sender=None):
         """ Remove a card from a given section. """
-        self.set_locale(locale)
+        self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot remove cards" % sender)
             return self.feedback(MSG_NO_PERM, sender)
 
         if not REGEX_TABLE.match(section):
-            msg = _("'%s' is not a valid section name") % section
-            return self.feedback(msg, sender)
+            return self.feedback(
+                _("'%s' is not a valid section name") % section, sender)
 
         try:
             conn, cur = self.connect()
@@ -345,17 +389,17 @@ class Archivist:
         return self.feedback(_("Removed card '%s'") % idc, sender)
 
     @Message(tags=["remove-section"])
-    def remove_section(self, section, sender=None, locale="en"):
+    def remove_section(self, section, sender=None):
         """ Drop the section table from the database. """
-        self.set_locale(locale)
+        self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot remove sections" % sender)
             return self.feedback(MSG_NO_PERM, sender)
 
         if not REGEX_TABLE.match(section):
-            msg = _("'%s' is not a valid section name") % section
-            return self.feedback(msg, sender)
+            return self.feedback(
+                _("'%s' is not a valid section name") % section, sender)
 
         try:
             conn, cur = self.connect()
@@ -371,13 +415,13 @@ class Archivist:
         return self.feedback(_("Removed section '%s'") % section, sender)
 
     @Message(tags=["search"])
-    def search(self, section, query, sender, locale="en"):
+    def search(self, section, query, sender):
         """ Traverse a section and find cards relevant to the query. """
-        self.set_locale(locale)
+        self.set_locale(sender)
 
         if not REGEX_TABLE.match(section):
-            msg = _("'%s' is not a valid section name") % section
-            return self.feedback(msg, sender)
+            return self.feedback(
+                _("'%s' is not a valid section name") % section, sender)
 
         s_terms = set([t.lower() for t in query.split()])
 
@@ -412,12 +456,13 @@ class Archivist:
 
     def build_card_msg(self, card):
         """ Format the card's information for easier reading. """
-        msg = "Card %d\n---------\n" % card["id"]
-        msg += "Title: %s\n" % card["title"]
-        msg += "Description: %s\n" % card["desc"]
-        msg += "Tags: %s\n" % card["tags"]
-        msg += "Last modified <%s> by %s\n\n" % (
+        msg = "\n--------------------\n"
+        msg += "[%d] %s" % (card["id"], card["title"])
+        msg += "\n--------------------\n\n"
+        msg += "%s\n\n" % card["desc"]
+        msg += "Last modified <%s> - %s\n" % (
             str(card["modified"]), card["modified_by"])
+        msg += "Tags: %s\n\n" % card["tags"]
         msg += card["content"]
 
         return msg
@@ -489,11 +534,19 @@ class Archivist:
 
         return False
 
-    def set_locale(self, locale):
+    def set_locale(self, user):
         """ Set the locale for messages based on the locale of the sender.
 
-            if no locale is povided, English (en) is used by default.
+            If no locale is povided, Zoe's default locale is used or
+            English (en) is used by default.
         """
+        if not user:
+            locale = ZOE_LOCALE
+
+        else:
+            conf = USERS.subject(user)
+            locale = conf.get("locale", ZOE_LOCALE)
+
         lang = gettext.translation("archivist", localedir=LOCALEDIR,
             languages=[locale,])
 
