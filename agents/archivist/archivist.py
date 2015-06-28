@@ -216,47 +216,6 @@ class Archivist:
 
         return self.feedback(_("Modified card '%s'") % idc, sender)
 
-    @Message(tags=["get-card"])
-    def get_card(self, section, idc, sender, method, to=None):
-        """ Obtain information from a single card and send it to the user
-            through the chosen communication method.
-        """
-        self.set_locale(sender)
-
-        if not REGEX_TABLE.match(section):
-            return self.feedback(
-                _("'%s' is not a valid section name") % section, sender)
-
-        try:
-            conn, cur = self.connect()
-
-            cur.execute(Q_GET_CARD % section, (idc, ))
-
-            card = cur.fetchone()
-
-            cur.close()
-            conn.close()
-
-            if not card:
-                return self.feedback(
-                    _("Card not found in section '%s'") % section, sender)
-
-        except sqlite3.OperationalError as e:
-            return self.feedback("Error: " + str(e), sender)
-
-        msg = self.build_card_msg(card)
-
-        if not to:
-            to = sender
-
-        if method == "mail":
-            return (
-                self.feedback(_("Sending..."), sender),
-                self.feedback(msg, to, subject)
-            )
-
-        return self.feedback(msg, to)
-
     @Message(tags=["get-cards"])
     def get_cards(self, section, idcs, sender, method, to=None):
         """ Obtain information from a list of cards and send it to the user
@@ -295,7 +254,10 @@ class Archivist:
             to = sender
 
         if method == "mail":
-            return self.feedback(msg, to, "Archivist")
+            return (
+                self.feedback(_("Sending..."), sender),
+                self.feedback(msg, to, subject)
+            )
 
         return self.feedback(msg, to)
 
