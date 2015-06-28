@@ -50,7 +50,7 @@ if __name__ == '__main__':
     title_re = re.search("title:(.*)", body, re.IGNORECASE)
     title = title_re.group(1).strip() if title_re else ""
 
-    desc_re = re.search("description:(.*)", body, re.IGNORECASE)
+    desc_re = re.search("desc:(.*)", body, re.IGNORECASE)
     desc = desc_re.group(1).strip() if desc_re else ""
 
     tags_re = re.search("tags:(.*)", body, re.IGNORECASE)
