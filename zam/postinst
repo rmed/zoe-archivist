@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# Install dependencies
+# Fuzzywuzzy may conflict with Zoe's internal package, so we install it
+# to the agent's directory
+pip install -t ${ZOE_HOME}/agents/archivist fuzzywuzzy
+pip install -t ${ZOE_HOME}/agents/archivist python-Levenshtein

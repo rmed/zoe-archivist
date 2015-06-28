@@ -4,4 +4,4 @@ license = MIT
 maintainer = Rafael Medina García <rafamedgar@gmail.com>
 script = archivist.py
 topics =
-description = Archive management based around small information cards
+description = Archive management using small information cards
