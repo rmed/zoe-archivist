@@ -1,10 +1,10 @@
-# Zoe archivist ![Agent version](https://img.shields.io/badge/Zoe_Agent-0.1.0-blue.svg "Zoe archivist")
+# Zoe archivist ![Agent version](https://img.shields.io/badge/Zoe_Agent-0.1.2-blue.svg "Zoe archivist")
 
 Archive management using small information cards.
 
 ## Requirements
 
-This agent requires [fuzzywuzzy](https://pypi.python.org/pypi/fuzzywuzzy) and [python-Levenshtein](https://pypi.python.org/pypi/fuzzywuzzy). These packages are automatically installed by the `postinst` script.
+This agent requires [fuzzywuzzy](https://pypi.python.org/pypi/fuzzywuzzy) and [python-Levenshtein](https://pypi.python.org/pypi/python-Levenshtein). These packages are automatically installed by the `postinst` script.
 
 However, note that these files will not be deleted should you uninstall the agent.
 
