@@ -3,8 +3,7 @@
 # Install dependencies
 # Fuzzywuzzy may conflict with Zoe's internal package, so we install it
 # to the agent's directory
-pip3 install -t ${ZOE_HOME}/agents/archivist fuzzywuzzy
-pip3 install -t ${ZOE_HOME}/agents/archivist/fuzzywuzzy python-Levenshtein
+pip3 install -t ${ZOE_HOME}/agents/archivist/lib infocards
 
-# Create directory
-mkdir -p ${ZOE_HOME}/etc/archivist
+# Create config file
+touch ${ZOE_HOME}/etc/archvist.conf

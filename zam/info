@@ -1,5 +1,5 @@
 agent = archivist
-version = 0.1.2
+version = 0.2.0
 license = MIT
 maintainer = Rafael Medina García <rafamedgar@gmail.com>
 script = archivist.py

@@ -1,12 +1,12 @@
-# Zoe archivist ![Agent version](https://img.shields.io/badge/Zoe_Agent-0.1.0-blue.svg "Zoe archivist")
+# Zoe archivist ![Agent version](https://img.shields.io/badge/Zoe_Agent-0.2.0-blue.svg "Zoe archivist")
 
 Archive management using small information cards.
 
 ## Requirements
 
-This agent requires [fuzzywuzzy](https://pypi.python.org/pypi/fuzzywuzzy) and [python-Levenshtein](https://pypi.python.org/pypi/fuzzywuzzy). These packages are automatically installed by the `postinst` script.
+This agent requires [infocards](https://github.com/rmed/infocards), which is automatically installed by the `postinst` script.
 
-However, note that these files will not be deleted should you uninstall the agent.
+**If you are updating from version 0.1.0, you should first uninstall the agent.**
 
 ## Why?
 
@@ -14,7 +14,7 @@ From time to time I come across something that seems very interesting and think 
 
 ## How does it work?
 
-Information is stored in `cards` that are stored in `sections`. These sections are simply SQLite tables stored in `ZOE_HOME/etc/archivist/archive.db`. All users recognized by Zoe are/should be able to search and retrieve cards from the archive. However, if you want to edit, add or perform more priviledged tasks, you should create a new group in the `ZOE_HOME/etc/zoe-users.conf` and add the `archivists` group:
+Information is stored in `cards` that can also be associated to `sections`. All users recognized by Zoe are/should be able to search and retrieve cards from the archive. However, if you want to edit, add or perform more priviledged tasks, you should create a new group in the `ZOE_HOME/etc/zoe-users.conf` and add the `archivists` group:
 
 ```
 [group archivists]
@@ -28,8 +28,6 @@ The natural commands are pretty self-explanatory, however there are a couple of 
 When creating a card, you must send a mail with subject `Archivist new` and mail body:
 
 ```
-section: where the new card will be stored
-
 title: title of the card
 desc: small description of the card
 
@@ -47,15 +45,14 @@ The order for these is irrelevant.
 Similar to card creation, but subject should be `Archivist edit` and mail body:
 
 ```
-section: section in which the card is stored
 id: ID of the card
 
-title: title of the card
-desc: small description of the card
+title: new title of the card
+desc: new small description of the card
 
-tags: tags for searching, separated by whitespace
+tags: new tags for searching, separated by whitespace
 
-content: main content of the card.
+content: new main content of the card.
 Can also be multiline, but you should end it with
 /content
 ```

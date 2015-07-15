@@ -3,91 +3,128 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-06-28 20:53+0200\n"
-"PO-Revision-Date: 2015-06-28 20:54+0100\n"
-"Language: en\n"
+"POT-Creation-Date: 2015-07-15 12:54+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Last-Translator: Rafael Medina García <rafamedgar@gmail.com>\n"
-"Language-Team: \n"
-"X-Generator: Poedit 1.7.7\n"
+"X-Generator: Poedit 1.8.2\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
-#: agents/archivist/archivist.py:42
+#: agents/archivist/archivist.py:40
 msgid "You don't have permissions to do that"
 msgstr ""
 
-#: agents/archivist/archivist.py:84 agents/archivist/archivist.py:161
-#: agents/archivist/archivist.py:188 agents/archivist/archivist.py:228
-#: agents/archivist/archivist.py:269 agents/archivist/archivist.py:308
-#: agents/archivist/archivist.py:374 agents/archivist/archivist.py:402
-#: agents/archivist/archivist.py:424
-#, python-format
-msgid "'%s' is not a valid section name"
-msgstr ""
-
-#: agents/archivist/archivist.py:107
+#: agents/archivist/archivist.py:71
 #, python-format
 msgid "Added card to section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:142
+#: agents/archivist/archivist.py:74
 #, python-format
-msgid "Sending dump to %s"
+msgid "Failed to add card to section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:144
-#, python-format
-msgid "Archive dump - %s"
-msgstr ""
-
-#: agents/archivist/archivist.py:174
-#, python-format
-msgid "Created section '%s'"
-msgstr ""
-
-#: agents/archivist/archivist.py:217
-#, python-format
-msgid "Modified card '%s'"
-msgstr ""
-
-#: agents/archivist/archivist.py:242
-#, python-format
-msgid "Card not found in section '%s'"
-msgstr ""
-
-#: agents/archivist/archivist.py:254
-msgid "Sending..."
-msgstr ""
-
-#: agents/archivist/archivist.py:285
-#, python-format
-msgid "Card %s not found"
-msgstr ""
-
-#: agents/archivist/archivist.py:331 agents/archivist/archivist.py:453
+#: agents/archivist/archivist.py:95 agents/archivist/archivist.py:360
+#: agents/archivist/archivist.py:409
 msgid "No cards found"
 msgstr ""
 
-#: agents/archivist/archivist.py:359
+#: agents/archivist/archivist.py:111
+#, python-format
+msgid "Card %s does not exist"
+msgstr ""
+
+#: agents/archivist/archivist.py:121 agents/archivist/archivist.py:381
 msgid "No sections found"
 msgstr ""
 
-#: agents/archivist/archivist.py:389
+#: agents/archivist/archivist.py:143
 #, python-format
 msgid "Removed card '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:415
+#: agents/archivist/archivist.py:145
+#, python-format
+msgid "Failed to remove card '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:165
 #, python-format
 msgid "Removed section '%s'"
 msgstr ""
 
-#: agents/archivist/archivist.py:429
+#: agents/archivist/archivist.py:167
+#, python-format
+msgid "Failed to remove '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:188
+#, python-format
+msgid "Card %s not found"
+msgstr ""
+
+#: agents/archivist/archivist.py:199
+msgid "Sending..."
+msgstr ""
+
+#: agents/archivist/archivist.py:234
+#, python-format
+msgid "Modified card '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:236
+#, python-format
+msgid "Failed to modify card '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:267
+#, python-format
+msgid "Created new card [%d]"
+msgstr ""
+
+#: agents/archivist/archivist.py:269
+msgid "Failed to create card"
+msgstr ""
+
+#: agents/archivist/archivist.py:288
+#, python-format
+msgid "Created section '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:290
+#, python-format
+msgid "Could not create section '%s'"
+msgstr ""
+
+#: agents/archivist/archivist.py:310
+msgid "Removed card"
+msgstr ""
+
+#: agents/archivist/archivist.py:313
+msgid "Could not remove card"
+msgstr ""
+
+#: agents/archivist/archivist.py:333
+msgid "Renamed section"
+msgstr ""
+
+#: agents/archivist/archivist.py:336
+msgid "Could not rename"
+msgstr ""
+
+#: agents/archivist/archivist.py:344
 msgid "No query specified"
+msgstr ""
+
+#: agents/archivist/archivist.py:398
+#, python-format
+msgid "Section %s does not exist"
 msgstr ""

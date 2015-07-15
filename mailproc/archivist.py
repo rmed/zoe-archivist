@@ -26,7 +26,6 @@
 
 import argparse
 import re
-import sys
 
 parser = argparse.ArgumentParser()
 
@@ -41,11 +40,8 @@ if __name__ == '__main__':
     with open(args.text, "r") as f:
         body = f.read()
 
-    section_re = re.search("section:(.*)", body, re.IGNORECASE)
-    section = section_re.group(1).strip() if section_re else ""
-
-    idc_re = re.search("id:(.*)", body, re.IGNORECASE)
-    idc = idc_re.group(1).strip() if idc_re else ""
+    cid_re = re.search("id:(.*)", body, re.IGNORECASE)
+    cid = cid_re.group(1).strip() if cid_re else ""
 
     title_re = re.search("title:(.*)", body, re.IGNORECASE)
     title = title_re.group(1).strip() if title_re else ""
@@ -69,14 +65,14 @@ if __name__ == '__main__':
     if args.subject == "Archivist new":
         # Create new card
         print(
-            "message dst=archivist&tag=add-card&section=%s&title=%s&desc=%s&content=%s&tags=%s&sender=%s" % (
-            section, title, desc, content, tags, args.sender))
+            "message dst=archivist&tag=new-card&title=%s&desc=%s&content=%s&tags=%s&sender=%s" % (
+                title, desc, content, tags, args.sender))
 
     elif args.subject == ("Archivist edit"):
         # Edit existing card
         # Only modifies specified values
-        msg = "message dst=archivist&tag=edit-card&section=%s&idc=%s&sender=%s" % (
-            section, idc, args.sender)
+        msg = "message dst=archivist&tag=modify-card&cid=%s&sender=%s" % (
+            cid, args.sender)
 
         if title:
             msg += "&title=" + title

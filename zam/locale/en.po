@@ -5,138 +5,126 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Zoe Archivist 0.2.0\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-15 12:51+0200\n"
-"PO-Revision-Date: 2015-07-15 12:53+0200\n"
+"POT-Creation-Date: 2015-07-15 12:53+0200\n"
+"PO-Revision-Date: 2015-07-15 12:54+0200\n"
 "Last-Translator: Rafael Medina García <rafamedgar@gmail.com>\n"
-"Language-Team: rafamedgar@gmail.com\n"
-"Language: es\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.8.2\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
 
 #: agents/archivist/archivist.py:40
 msgid "You don't have permissions to do that"
-msgstr "No tienes permisos para hacer eso"
+msgstr ""
 
 #: agents/archivist/archivist.py:71
 #, python-format
 msgid "Added card to section '%s'"
-msgstr "Tarjeta añadida a la sección '%s'"
+msgstr ""
 
 #: agents/archivist/archivist.py:74
 #, python-format
 msgid "Failed to add card to section '%s'"
-msgstr "No se pudo añadir la tarjeta a la sección '%s'"
+msgstr ""
 
 #: agents/archivist/archivist.py:95 agents/archivist/archivist.py:360
 #: agents/archivist/archivist.py:409
 msgid "No cards found"
-msgstr "No se han encontrado tarjetas"
+msgstr ""
 
 #: agents/archivist/archivist.py:111
 #, python-format
 msgid "Card %s does not exist"
-msgstr "Tarjeta %s no encontrada"
+msgstr ""
 
 #: agents/archivist/archivist.py:121 agents/archivist/archivist.py:381
 msgid "No sections found"
-msgstr "No se han encontrado secciones"
+msgstr ""
 
 #: agents/archivist/archivist.py:143
 #, python-format
 msgid "Removed card '%s'"
-msgstr "Tarjeta '%s' eliminada"
+msgstr ""
 
 #: agents/archivist/archivist.py:145
 #, python-format
 msgid "Failed to remove card '%s'"
-msgstr "No se pudo eliminar la tarjeta '%s'"
+msgstr ""
 
 #: agents/archivist/archivist.py:165
 #, python-format
 msgid "Removed section '%s'"
-msgstr "Sección '%s' eliminada"
+msgstr ""
 
 #: agents/archivist/archivist.py:167
 #, python-format
 msgid "Failed to remove '%s'"
-msgstr "No se pudo eliminar '%s'"
+msgstr ""
 
 #: agents/archivist/archivist.py:188
 #, python-format
 msgid "Card %s not found"
-msgstr "Tarjeta %s no encontrada"
+msgstr ""
 
 #: agents/archivist/archivist.py:199
 msgid "Sending..."
-msgstr "Enviando..."
+msgstr ""
 
 #: agents/archivist/archivist.py:234
 #, python-format
 msgid "Modified card '%s'"
-msgstr "Tarjeta '%s' modificada"
+msgstr ""
 
 #: agents/archivist/archivist.py:236
 #, python-format
 msgid "Failed to modify card '%s'"
-msgstr "No se pudo modificar la tarjeta '%s'"
+msgstr ""
 
 #: agents/archivist/archivist.py:267
 #, python-format
 msgid "Created new card [%d]"
-msgstr "Tarjeta nueva creada [%d]"
+msgstr ""
 
 #: agents/archivist/archivist.py:269
 msgid "Failed to create card"
-msgstr "No se pudo crear la tarjeta"
+msgstr ""
 
 #: agents/archivist/archivist.py:288
 #, python-format
 msgid "Created section '%s'"
-msgstr "Sección '%s' creada"
+msgstr ""
 
 #: agents/archivist/archivist.py:290
 #, python-format
 msgid "Could not create section '%s'"
-msgstr "No se pudo crear la sección '%s'"
+msgstr ""
 
 #: agents/archivist/archivist.py:310
 msgid "Removed card"
-msgstr "Tarjeta eliminada"
+msgstr ""
 
 #: agents/archivist/archivist.py:313
 msgid "Could not remove card"
-msgstr "No se pudo eliminar la tarjeta"
+msgstr ""
 
 #: agents/archivist/archivist.py:333
 msgid "Renamed section"
-msgstr "Sección renombrada"
+msgstr ""
 
 #: agents/archivist/archivist.py:336
 msgid "Could not rename"
-msgstr "No se pudo renombrar"
+msgstr ""
 
 #: agents/archivist/archivist.py:344
 msgid "No query specified"
-msgstr "No se han especificado términos de búsqueda"
+msgstr ""
 
 #: agents/archivist/archivist.py:398
 #, python-format
 msgid "Section %s does not exist"
-msgstr "La sección '%s' no existe"
-
-#~ msgid "'%s' is not a valid section name"
-#~ msgstr "'%s' no es un nombre de sección válido"
-
-#~ msgid "Sending dump to %s"
-#~ msgstr "Enviando dump a %s"
-
-#~ msgid "Archive dump - %s"
-#~ msgstr "Dump de archivo - %s"
-
-#~ msgid "Card not found in section '%s'"
-#~ msgstr "Tarjeta no encontrada en la sección '%s'"
+msgstr ""
