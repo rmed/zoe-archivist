@@ -376,7 +376,7 @@ class Archivist:
 
             msg = ""
             for section in sections:
-                msg += "- %s" % section.name
+                msg += "- %s\n" % section.name
 
         except Exception as e:
             return self.feedback("Error: " + str(e), sender, src)
