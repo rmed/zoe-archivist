@@ -44,6 +44,7 @@ my $section_list;
 my $section_cards;
 
 my $sender;
+my $src;
 my @strings;
 my @integers;
 my $mail;
@@ -51,6 +52,7 @@ my $mail;
 GetOptions("get"                   => \$get,
            "run"                   => \$run,
            "msg-sender-uniqueid=s" => \$sender,
+           "msg-src=s"             => \$src,
            "as"                    => \$add_section,
            "cl"                    => \$card_list,
            "cs"                    => \$card_sections,
@@ -147,103 +149,103 @@ sub get {
 # Create a card-section relation
 #
 sub add_section {
-  print("message dst=archivist&tag=add-section&cid=$integers[0]&sname=$strings[0]&sender=$sender\n");
+  print("message dst=archivist&tag=add-section&cid=$integers[0]&sname=$strings[0]&sender=$sender&src=$src\n");
 }
 
 #
 # List all cards in the archive
 #
 sub card_list {
-  print("message dst=archivist&tag=card-list&sender=$sender\n");
+  print("message dst=archivist&tag=card-list&sender=$sender&src=$src\n");
 }
 
 #
 # List all sections a card appears in
 #
 sub card_sections {
-  print("message dst=archivist&tag=card-sections&cid=$integers[0]&sender=$sender\n");
+  print("message dst=archivist&tag=card-sections&cid=$integers[0]&sender=$sender&src=$src\n");
 }
 
 #
 # Remove a card from the archive
 #
 sub delete_card {
-  print("message dst=archivist&tag=delete-card&cid=$integers[0]&sender=$sender\n");
+  print("message dst=archivist&tag=delete-card&cid=$integers[0]&sender=$sender&src=$src\n");
 }
 
 #
 # Remove a section from the archive
 #
 sub delete_section {
-  print("message dst=archivist&tag=delete-section&name=$strings[0]&sender=$sender\n");
+  print("message dst=archivist&tag=delete-section&name=$strings[0]&sender=$sender&src=$src\n");
 }
 
 #
 # Get specified cards and send them to specified user by jabber
 #
 sub get_cards {
-  print("message dst=archivist&tag=get-cards&cids=@integers&method=jabber&sender=$sender\n");
+  print("message dst=archivist&tag=get-cards&cids=@integers&method=jabber&sender=$sender&src=$src\n");
 }
 
 #
 # Get specified cards and send them to sender by mail
 #
 sub get_cards_me {
-  print("message dst=archivist&tag=get-cards&cids=@integers&method=mail&sender=$sender\n");
+  print("message dst=archivist&tag=get-cards&cids=@integers&method=mail&sender=$sender&src=$src\n");
 }
 
 #
 # Get specified cards and send them to specified user by mail
 #
 sub get_cards_snd {
-  print("message dst=archivist&tag=get-cards&cids=@integers&method=mail&to=$mail&sender=$sender\n");
+  print("message dst=archivist&tag=get-cards&cids=@integers&method=mail&to=$mail&sender=$sender&src=$src\n");
 }
 
 #
 # Create a new section
 #
 sub new_section {
-  print("message dst=archivist&tag=new-section&name=$strings[0]&sender=$sender\n");
+  print("message dst=archivist&tag=new-section&name=$strings[0]&sender=$sender&src=$src\n");
 }
 
 #
 # Remove a card-section relation
 #
 sub remove_section {
-  print("message dst=archivist&tag=remove-section&cid=$integers[0]&sname=$strings[0]&sender=$sender\n");
+  print("message dst=archivist&tag=remove-section&cid=$integers[0]&sname=$strings[0]&sender=$sender&src=$src\n");
 }
 
 #
 # Rename a section
 #
 sub rename_section {
-  print("message dst=archivist&tag=rename-section&name=$strings[0]&newname=$strings[1]&sender=$sender\n");
+  print("message dst=archivist&tag=rename-section&name=$strings[0]&newname=$strings[1]&sender=$sender&src=$src\n");
 }
 
 #
 # Search in the archive for relevant cards
 #
 sub search {
-  print("message dst=archivist&tag=search&query=$strings[0]&sender=$sender\n");
+  print("message dst=archivist&tag=search&query=$strings[0]&sender=$sender&src=$src\n");
 }
 
 #
 # Search in the given section of the archive for relevant cards
 #
 sub search_section {
-  print("message dst=archivist&tag=search&query=$strings[0]&section=$strings[1]&sender=$sender\n");
+  print("message dst=archivist&tag=search&query=$strings[0]&section=$strings[1]&sender=$sender&src=$src\n");
 }
 
 #
 # List all sections in the archive
 #
 sub section_list {
-  print("message dst=archivist&tag=section-list&sender=$sender\n");
+  print("message dst=archivist&tag=section-list&sender=$sender&src=$src\n");
 }
 
 #
 # List all cards in a given section
 #
 sub section_cards {
-  print("message dst=archivist&tag=section-cards&name=$strings[0]&sender=$sender\n");
+  print("message dst=archivist&tag=section-cards&name=$strings[0]&sender=$sender&src=$src\n");
 }

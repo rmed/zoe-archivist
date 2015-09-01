@@ -51,30 +51,30 @@ ZOE_LOCALE = env["ZOE_LOCALE"] or "en"
 class Archivist:
 
     @Message(tags=["add-section"])
-    def add_card_to_section(self, cid, sname, sender=None):
+    def add_card_to_section(self, cid, sname, sender=None, src=None):
         """ Adds a card to the given section. """
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot modify section relations" % sender)
-            return self.feedback(MSG_NO_PERM, sender)
+            return self.feedback(MSG_NO_PERM, sender, src)
 
         try:
             ar = self.connect()
             result = ar.add_card_to_section(cid=int(cid), sname=sname)
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(
-                _("Added card to section '%s'") % sname, sender)
+                _("Added card to section '%s'") % sname, sender, src)
 
         return self.feedback(
-            _("Failed to add card to section '%s'") % sname, sender)
+            _("Failed to add card to section '%s'") % sname, sender, src)
 
     @Message(tags=["card-list"])
-    def card_list(self, sender):
+    def card_list(self, sender, src):
         """ List all the cards in the archive. """
         self.set_locale(sender)
 
@@ -89,15 +89,15 @@ class Archivist:
                     card.id, card.title, card.desc)
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if not msg:
             msg = _("No cards found")
 
-        return self.feedback(msg, sender)
+        return self.feedback(msg, sender, src)
 
     @Message(tags=["card-sections"])
-    def card_sections(self, cid, sender=None):
+    def card_sections(self, cid, sender, src):
         """ Show all the sections a card appears in. """
         self.set_locale(sender)
 
@@ -108,66 +108,67 @@ class Archivist:
             card = ar.get_card(cid=int(cid))
 
             if not card:
-                return self.feedback(_("Card %s does not exist") % cid, sender)
+                return self.feedback(_("Card %s does not exist") % cid,
+                    sender, src)
 
             sections = card.sections()
             for section in sections:
                 msg += "- %s\n" % section.name
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if not msg:
             msg = _("No sections found")
 
-        return self.feedback(msg, sender)
+        return self.feedback(msg, sender, src)
 
     @Message(tags=["delete-card"])
-    def delete_card(self, cid, sender=None):
+    def delete_card(self, cid, sender=None, src=None):
         """ Remove a card from the archive. """
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot remove cards" % sender)
-            return self.feedback(MSG_NO_PERM, sender)
+            return self.feedback(MSG_NO_PERM, sender, src)
 
         try:
             ar = self.connect()
             result = ar.delete_card(cid=int(cid))
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(
-                _("Removed card '%s'") % cid, sender)
+                _("Removed card '%s'") % cid, sender, src)
 
-        return self.feedback(_("Failed to remove card '%s'") % cid, sender)
+        return self.feedback(_("Failed to remove card '%s'") % cid, sender, src)
 
     @Message(tags=["delete-section"])
-    def delete_section(self, name, sender=None):
+    def delete_section(self, name, sender=None, src=None):
         """ Remove a section from the archive. """
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot remove cards" % sender)
-            return self.feedback(MSG_NO_PERM, sender)
+            return self.feedback(MSG_NO_PERM, sender, src)
 
         try:
             ar = self.connect()
             result = ar.delete_section(name=name)
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(
-                _("Removed section '%s'") % name, sender)
+                _("Removed section '%s'") % name, sender, src)
 
-        return self.feedback(_("Failed to remove '%s'") % name, sender)
+        return self.feedback(_("Failed to remove '%s'") % name, sender, src)
 
     @Message(tags=["get-cards"])
-    def get_cards(self, cids, sender, method, to=None):
+    def get_cards(self, cids, method, sender=None, src=None, to=None):
         """ Obtain information from a list of cards and send it to the user
             through the chosen communication method.
         """
@@ -189,28 +190,28 @@ class Archivist:
                 msg += "\n"
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if not to:
             to = sender
 
         if method == "mail":
             return (
-                self.feedback(_("Sending..."), sender),
-                self.feedback(msg, to, "Archivist")
+                self.feedback(_("Sending..."), sender, src),
+                self.feedback(msg, to, subject="Archivist")
             )
 
-        return self.feedback(msg, to)
+        return self.feedback(msg, to, src)
 
     @Message(tags=["modify-card"])
     def modify_card(self, cid, title=None, desc=None, content=None,
-            tags=None, sender=None):
+            tags=None, sender=None, src=None):
         """ Modify an existing card. """
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot create sections" % sender)
-            return self.feedback(MSG_NO_PERM, sender)
+            return self.feedback(MSG_NO_PERM, sender, src)
 
         try:
             ar = self.connect()
@@ -228,15 +229,16 @@ class Archivist:
             )
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if newcard:
-            return self.feedback(_("Modified card '%s'") % cid, sender)
+            return self.feedback(_("Modified card '%s'") % cid, sender, src)
 
-        return self.feedback(_("Failed to modify card '%s'") % cid, sender)
+        return self.feedback(_("Failed to modify card '%s'") % cid,
+            sender, src)
 
     @Message(tags=["new-card"])
-    def new_card(self, title, desc, content, tags, sender=None):
+    def new_card(self, title, desc, content, tags, sender=None, src=None):
         """ Add a new card to the archive. Cards are added by sending
             an email with a specific format.
 
@@ -246,7 +248,7 @@ class Archivist:
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot add cards" % sender)
-            return self.feedback(MSG_NO_PERM, sender)
+            return self.feedback(MSG_NO_PERM, sender, src)
 
         try:
             ar = self.connect()
@@ -260,88 +262,90 @@ class Archivist:
             )
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if newcard:
             return self.feedback(
-                _("Created new card [%d]") % newcard.id, sender)
+                _("Created new card [%d]") % newcard.id, sender, src)
 
-        return self.feedback(_("Failed to create card"), sender)
+        return self.feedback(_("Failed to create card"), sender, src)
 
     @Message(tags=["new-section"])
-    def new_section(self, name, sender=None):
+    def new_section(self, name, sender=None, src=None):
         """ Create a new section in the archive. """
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot create sections" % sender)
-            return self.feedback(MSG_NO_PERM, sender)
+            return self.feedback(MSG_NO_PERM, sender, src)
 
         try:
             ar = self.connect()
             result = ar.new_section(name)
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if result:
-            return self.feedback(_("Created section '%s'") % name, sender)
+            return self.feedback(_("Created section '%s'") % name,
+                sender, src)
 
-        return self.feedback(_("Could not create section '%s'") %name, sender)
+        return self.feedback(_("Could not create section '%s'") % name,
+            sender, src)
 
     @Message(tags=["remove-section"])
-    def remove_card_from_section(self, cid, sname, sender=None):
+    def remove_card_from_section(self, cid, sname, sender=None, src=None):
         """ Remove a card from a given section. """
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot modify section relations" % sender)
-            return self.feedback(MSG_NO_PERM, sender)
+            return self.feedback(MSG_NO_PERM, sender, src)
 
         try:
             ar = self.connect()
             result = ar.remove_card_from_section(cid=int(cid), sname=sname)
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(
-                _("Removed card"), sender)
+                _("Removed card"), sender, src)
 
         return self.feedback(
-            _("Could not remove card"), sender)
+            _("Could not remove card"), sender, src)
 
     @Message(tags=["rename-section"])
-    def rename_section(self, name, newname, sender=None):
+    def rename_section(self, name, newname, sender=None, src=None):
         """ Rename a section of the archive. """
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot modify section relations" % sender)
-            return self.feedback(MSG_NO_PERM, sender)
+            return self.feedback(MSG_NO_PERM, sender, src)
 
         try:
             ar = self.connect()
             result = ar.rename_section(newname, oldname=name)
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(
-                _("Renamed section"), sender)
+                _("Renamed section"), sender, src)
 
         return self.feedback(
-            _("Could not rename"), sender)
+            _("Could not rename"), sender, src)
 
     @Message(tags=["search"])
-    def search(self, query, sender, section=None):
+    def search(self, query, sender, section=None, src=None):
         """ Traverse a section and find cards relevant to the query. """
         self.set_locale(sender)
 
         if not query:
-            return self.feedback(_("No query specified"), sender)
+            return self.feedback(_("No query specified"), sender, src)
 
         result = ""
 
@@ -354,15 +358,15 @@ class Archivist:
                     card.id, card.title, card.desc)
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if not result:
             result = _("No cards found")
 
-        return self.feedback(result, sender)
+        return self.feedback(result, sender, src)
 
     @Message(tags=["section-list"])
-    def section_list(self, sender):
+    def section_list(self, sender, src):
         """ Show all the sections in the archive. """
         self.set_locale(sender)
 
@@ -375,15 +379,15 @@ class Archivist:
                 msg += "- %s" % section.name
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if not msg:
             msg = _("No sections found")
 
-        return self.feedback(msg, sender)
+        return self.feedback(msg, sender, src)
 
     @Message(tags=["section-cards"])
-    def section_cards(self, name, sender=None):
+    def section_cards(self, name, sender, src):
         """ Show all the cards present in a section. """
         self.set_locale(sender)
 
@@ -395,7 +399,7 @@ class Archivist:
 
             if not section:
                 return self.feedback(
-                    _("Section %s does not exist") % name, sender)
+                    _("Section %s does not exist") % name, sender, src)
 
             cards = section.cards()
             for card in cards:
@@ -403,12 +407,12 @@ class Archivist:
                     card.id, card.title, card.desc)
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender)
+            return self.feedback("Error: " + str(e), sender, src)
 
         if not msg:
             msg = _("No cards found")
 
-        return self.feedback(msg, sender)
+        return self.feedback(msg, sender, src)
 
     def build_card_msg(self, card):
         """ Format the card's information for easier reading. """
@@ -426,12 +430,13 @@ class Archivist:
     def connect(self):
         return Archive(db_type='sqlite', db_name=DB_PATH)
 
-    def feedback(self, msg, user, subject=None, att=None):
+    def feedback(self, msg, user, dst=None, subject=None, att=None):
         """ Send a message or mail to a given user.
 
             msg     - message text or attachment
             user    - user to send the feedback to
             subject - if using mail feedback, subject for the mail
+            dst     - destination of the message: 'jabber' or 'tg'
             att     - mail attachment
         """
         if not user:
@@ -443,7 +448,7 @@ class Archivist:
         }
 
         if not subject:
-            to_send["relayto"] = "jabber"
+            to_send["relayto"] = dst
             to_send["msg"] = msg
 
         else:

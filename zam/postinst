@@ -6,4 +6,4 @@
 pip3 install -t ${ZOE_HOME}/agents/archivist/lib infocards
 
 # Create config file
-touch ${ZOE_HOME}/etc/archvist.conf
+touch ${ZOE_HOME}/etc/archivist.conf
