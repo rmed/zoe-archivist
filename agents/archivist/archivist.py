@@ -37,8 +37,6 @@ from zoe.models.users import Users
 
 gettext.install("archivist")
 
-MSG_NO_PERM = _("You don't have permissions to do that")
-
 with open(path(env["ZOE_HOME"], "etc", "archivist.conf"), "r") as f:
     DB_PATH = f.readline().strip()
 
@@ -57,7 +55,8 @@ class Archivist:
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot modify section relations" % sender)
-            return self.feedback(MSG_NO_PERM, sender, src)
+            return self.feedback(_("You don't have permissions to do that"),
+                sender, src)
 
         try:
             ar = self.connect()
@@ -130,7 +129,8 @@ class Archivist:
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot remove cards" % sender)
-            return self.feedback(MSG_NO_PERM, sender, src)
+            return self.feedback(_("You don't have permissions to do that"),
+                sender, src)
 
         try:
             ar = self.connect()
@@ -152,7 +152,8 @@ class Archivist:
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot remove cards" % sender)
-            return self.feedback(MSG_NO_PERM, sender, src)
+            return self.feedback(_("You don't have permissions to do that"),
+                sender, src)
 
         try:
             ar = self.connect()
@@ -211,7 +212,8 @@ class Archivist:
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot create sections" % sender)
-            return self.feedback(MSG_NO_PERM, sender, src)
+            return self.feedback(_("You don't have permissions to do that"),
+                sender, src)
 
         try:
             ar = self.connect()
@@ -248,7 +250,8 @@ class Archivist:
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot add cards" % sender)
-            return self.feedback(MSG_NO_PERM, sender, src)
+            return self.feedback(_("You don't have permissions to do that"),
+                sender, src)
 
         try:
             ar = self.connect()
@@ -277,7 +280,8 @@ class Archivist:
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot create sections" % sender)
-            return self.feedback(MSG_NO_PERM, sender, src)
+            return self.feedback(_("You don't have permissions to do that"),
+                sender, src)
 
         try:
             ar = self.connect()
@@ -300,7 +304,8 @@ class Archivist:
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot modify section relations" % sender)
-            return self.feedback(MSG_NO_PERM, sender, src)
+            return self.feedback(_("You don't have permissions to do that"),
+                sender, src)
 
         try:
             ar = self.connect()
@@ -323,7 +328,8 @@ class Archivist:
 
         if not self.has_permissions(sender):
             self.logger.info("%s cannot modify section relations" % sender)
-            return self.feedback(MSG_NO_PERM, sender, src)
+            return self.feedback(_("You don't have permissions to do that"),
+                sender, src)
 
         try:
             ar = self.connect()

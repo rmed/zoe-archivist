@@ -5,126 +5,129 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Zoe Archivist 0.2.0\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-07-15 12:51+0200\n"
-"PO-Revision-Date: 2015-07-15 12:53+0200\n"
+"POT-Creation-Date: 2015-09-02 12:54+0200\n"
+"PO-Revision-Date: 2015-09-02 12:54+0200\n"
 "Last-Translator: Rafael Medina García <rafamedgar@gmail.com>\n"
-"Language-Team: rafamedgar@gmail.com\n"
+"Language-Team: \n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.2\n"
+"X-Generator: Poedit 1.8.3\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: agents/archivist/archivist.py:40
+#: agents/archivist/archivist.py:58 agents/archivist/archivist.py:132
+#: agents/archivist/archivist.py:155 agents/archivist/archivist.py:215
+#: agents/archivist/archivist.py:253 agents/archivist/archivist.py:283
+#: agents/archivist/archivist.py:307 agents/archivist/archivist.py:331
 msgid "You don't have permissions to do that"
 msgstr "No tienes permisos para hacer eso"
 
-#: agents/archivist/archivist.py:71
+#: agents/archivist/archivist.py:70
 #, python-format
 msgid "Added card to section '%s'"
 msgstr "Tarjeta añadida a la sección '%s'"
 
-#: agents/archivist/archivist.py:74
+#: agents/archivist/archivist.py:73
 #, python-format
 msgid "Failed to add card to section '%s'"
 msgstr "No se pudo añadir la tarjeta a la sección '%s'"
 
-#: agents/archivist/archivist.py:95 agents/archivist/archivist.py:360
-#: agents/archivist/archivist.py:409
+#: agents/archivist/archivist.py:94 agents/archivist/archivist.py:370
+#: agents/archivist/archivist.py:419
 msgid "No cards found"
 msgstr "No se han encontrado tarjetas"
 
-#: agents/archivist/archivist.py:111
+#: agents/archivist/archivist.py:110
 #, python-format
 msgid "Card %s does not exist"
 msgstr "Tarjeta %s no encontrada"
 
-#: agents/archivist/archivist.py:121 agents/archivist/archivist.py:381
+#: agents/archivist/archivist.py:121 agents/archivist/archivist.py:391
 msgid "No sections found"
 msgstr "No se han encontrado secciones"
 
-#: agents/archivist/archivist.py:143
+#: agents/archivist/archivist.py:144
 #, python-format
 msgid "Removed card '%s'"
 msgstr "Tarjeta '%s' eliminada"
 
-#: agents/archivist/archivist.py:145
+#: agents/archivist/archivist.py:146
 #, python-format
 msgid "Failed to remove card '%s'"
 msgstr "No se pudo eliminar la tarjeta '%s'"
 
-#: agents/archivist/archivist.py:165
+#: agents/archivist/archivist.py:167
 #, python-format
 msgid "Removed section '%s'"
 msgstr "Sección '%s' eliminada"
 
-#: agents/archivist/archivist.py:167
+#: agents/archivist/archivist.py:169
 #, python-format
 msgid "Failed to remove '%s'"
 msgstr "No se pudo eliminar '%s'"
 
-#: agents/archivist/archivist.py:188
+#: agents/archivist/archivist.py:190
 #, python-format
 msgid "Card %s not found"
 msgstr "Tarjeta %s no encontrada"
 
-#: agents/archivist/archivist.py:199
+#: agents/archivist/archivist.py:201
 msgid "Sending..."
 msgstr "Enviando..."
 
-#: agents/archivist/archivist.py:234
+#: agents/archivist/archivist.py:237
 #, python-format
 msgid "Modified card '%s'"
 msgstr "Tarjeta '%s' modificada"
 
-#: agents/archivist/archivist.py:236
+#: agents/archivist/archivist.py:239
 #, python-format
 msgid "Failed to modify card '%s'"
 msgstr "No se pudo modificar la tarjeta '%s'"
 
-#: agents/archivist/archivist.py:267
+#: agents/archivist/archivist.py:272
 #, python-format
 msgid "Created new card [%d]"
 msgstr "Tarjeta nueva creada [%d]"
 
-#: agents/archivist/archivist.py:269
+#: agents/archivist/archivist.py:274
 msgid "Failed to create card"
 msgstr "No se pudo crear la tarjeta"
 
-#: agents/archivist/archivist.py:288
+#: agents/archivist/archivist.py:294
 #, python-format
 msgid "Created section '%s'"
 msgstr "Sección '%s' creada"
 
-#: agents/archivist/archivist.py:290
+#: agents/archivist/archivist.py:297
 #, python-format
 msgid "Could not create section '%s'"
 msgstr "No se pudo crear la sección '%s'"
 
-#: agents/archivist/archivist.py:310
+#: agents/archivist/archivist.py:319
 msgid "Removed card"
 msgstr "Tarjeta eliminada"
 
-#: agents/archivist/archivist.py:313
+#: agents/archivist/archivist.py:322
 msgid "Could not remove card"
 msgstr "No se pudo eliminar la tarjeta"
 
-#: agents/archivist/archivist.py:333
+#: agents/archivist/archivist.py:343
 msgid "Renamed section"
 msgstr "Sección renombrada"
 
-#: agents/archivist/archivist.py:336
+#: agents/archivist/archivist.py:346
 msgid "Could not rename"
 msgstr "No se pudo renombrar"
 
-#: agents/archivist/archivist.py:344
+#: agents/archivist/archivist.py:354
 msgid "No query specified"
 msgstr "No se han especificado términos de búsqueda"
 
-#: agents/archivist/archivist.py:398
+#: agents/archivist/archivist.py:408
 #, python-format
 msgid "Section %s does not exist"
 msgstr "La sección '%s' no existe"
