@@ -240,7 +240,7 @@ class Archivist:
             sender, src)
 
     @Message(tags=["new-card"])
-    def new_card(self, title, desc, content, tags, sender=None, src=None):
+    def new_card(self, title, desc, content, tags, sender=None):
         """ Add a new card to the archive. Cards are added by sending
             an email with a specific format.
 
@@ -248,10 +248,18 @@ class Archivist:
         """
         self.set_locale(sender)
 
+        dst = None
+        subject = None
+        if sender:
+            dst = Users().subject(sender).get("preferred", "mail")
+
+            if dst == "mail":
+                subject = "Archivist"
+
         if not self.has_permissions(sender):
             self.logger.info("%s cannot add cards" % sender)
             return self.feedback(_("You don't have permissions to do that"),
-                sender, src)
+                sender, dst, subject=subject)
 
         try:
             ar = self.connect()
@@ -265,13 +273,16 @@ class Archivist:
             )
 
         except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            return self.feedback("Error: " + str(e), sender, dst,
+                subject=subject)
 
         if newcard:
             return self.feedback(
-                _("Created new card [%d]") % newcard.id, sender, src)
+                _("Created new card [%d]") % newcard.id, sender, dst,
+                subject=subject)
 
-        return self.feedback(_("Failed to create card"), sender, src)
+        return self.feedback(_("Failed to create card"), sender, dst,
+            subject=subject)
 
     @Message(tags=["new-section"])
     def new_section(self, name, sender=None, src=None):
