@@ -1,4 +1,4 @@
-# Zoe archivist ![Agent version](https://img.shields.io/badge/Zoe_Agent-0.2.1-blue.svg "Zoe archivist")
+# Zoe archivist ![Agent version](https://img.shields.io/badge/Zoe_Agent-0.2.2-blue.svg "Zoe archivist")
 
 Archive management using small information cards.
 
