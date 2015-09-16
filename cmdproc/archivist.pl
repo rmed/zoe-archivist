@@ -35,6 +35,8 @@ my $delete_sec;
 my $get_cards;
 my $get_cards_me;
 my $get_cards_snd;
+my $get_section;
+my $get_section_snd;
 my $new_section;
 my $remove_section;
 my $rename_section;
@@ -61,6 +63,8 @@ GetOptions("get"                   => \$get,
            "gc"                    => \$get_cards,
            "gcm"                   => \$get_cards_me,
            "gcs"                   => \$get_cards_snd,
+           "gsm"                   => \$get_section_me,
+           "gss"                   => \$get_section_snd,
            "ns"                    => \$new_section,
            "rs"                    => \$remove_section,
            "rns"                   => \$rename_section,
@@ -90,6 +94,10 @@ if ($get) {
   &get_cards_me;
 } elsif ($run and $get_cards_snd) {
   &get_cards_snd;
+} elsif ($run and $get_section_me) {
+  &get_section_me;
+} elsif ($run and $get_section_snd) {
+  &get_section_snd;
 } elsif ($run and $new_card) {
   &new_card;
 } elsif ($run and $new_section) {
@@ -120,6 +128,8 @@ sub get {
   print("--gc show /me card/cards <integer>\n");
   print("--gcm send me card/cards <integer>\n");
   print("--gcs send card/cards <integer> /to <user>\n");
+  print("--gsm send me card/cards /in section <string>\n");
+  print("--gss send card/cards /in section <string> /to <user>\n");
   print("--ns create /new section <string>\n");
   print("--rs remove /card <integer> /from <string>\n");
   print("--rns rename /section <string> to <string>\n");
@@ -136,6 +146,8 @@ sub get {
   print("--gc dame tarjeta/tarjetas <integer>\n");
   print("--gcm envíame tarjeta/tarjetas <integer>\n");
   print("--gcs envía tarjeta/tarjetas <integer> /a <user>\n");
+  print("--gsm envíame tarjeta/tarjetas /en /la sección <string>\n");
+  print("--gss envía tarjeta/tarjetas /en /la sección <string> /a <user>\n");
   print("--ns crea /nueva sección <string>\n");
   print("--rs quita /la /tarjeta <integer> /de <string>\n");
   print("--rns renombra /la /sección <string> a <string>\n");
@@ -181,10 +193,10 @@ sub delete_section {
 }
 
 #
-# Get specified cards and send them to specified user by jabber
+# Get specified cards and send them to specified user by jabber or tg
 #
 sub get_cards {
-  print("message dst=archivist&tag=get-cards&cids=@integers&method=jabber&sender=$sender&src=$src\n");
+  print("message dst=archivist&tag=get-cards&cids=@integers&sender=$sender&src=$src\n");
 }
 
 #
@@ -199,6 +211,20 @@ sub get_cards_me {
 #
 sub get_cards_snd {
   print("message dst=archivist&tag=get-cards&cids=@integers&method=mail&to=$mail&sender=$sender&src=$src\n");
+}
+
+#
+# Get cards in specified section and send them to sender by mail
+#
+sub get_section_me {
+  print("message dst=archivist&tag=get-section&sname=$strings[0]&method=mail&sender=$sender&src=$src\n");
+}
+
+#
+# Get cards in specified section and send them to specified user by mail
+#
+sub get_section_snd {
+  print("message dst=archivist&tag=get-cards&sname=$strings[0]&method=mail&to=$mail&sender=$sender&src=$src\n");
 }
 
 #

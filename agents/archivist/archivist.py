@@ -218,7 +218,7 @@ class Archivist:
             to      - optional recipient of the cards
         """
         cids, method, sender, src, to = self.multiparse(
-            parser, ['cids', 'methods', 'sender', 'src', 'to'])
+            parser, ['cids', 'method', 'sender', 'src', 'to'])
 
         self.set_locale(sender)
 
@@ -236,6 +236,49 @@ class Archivist:
 
                 msg += _("Card %s not found") % cid
                 msg += "\n"
+
+        except Exception as e:
+            return self.feedback("Error: " + str(e), sender, src)
+
+        if not to:
+            to = sender
+
+        if method == "mail":
+            return (
+                self.feedback(_("Sending..."), sender, src),
+                self.feedback(msg, to, subject="Archivist")
+            )
+
+        return self.feedback(msg, to, src)
+
+    @Message(tags=["get-section"])
+    def get_section(self, parser):
+        """ Obtain information from the cards contained in a given section.
+
+            sname*  - section name
+            method* - delivery method
+            sender  - sender of the message
+            src     - channel by which the message was delivered
+            to      - optional recipient of the cards
+        """
+        sname, method, sender, src, to = self.multiparse(
+            parser, ['sname', 'method', 'sender', 'src', 'to'])
+
+        self.set_locale(sender)
+
+        try:
+            ar = self.connect()
+            section = ar.get_section(name=sname)
+
+            if not section:
+                return self.feedback(
+                    _("Section %s does not exist") % sname, sender, src)
+
+            cards = section.cards()
+
+            msg = ""
+            for card in cards:
+                msg += "%s\n\n" % self.build_card_msg(card)
 
         except Exception as e:
             return self.feedback("Error: " + str(e), sender, src)
