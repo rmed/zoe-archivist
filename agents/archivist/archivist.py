@@ -32,7 +32,7 @@ import zoe
 from infocards.archive import Archive
 from os import environ as env
 from os.path import join as path
-from zoe.deco import *
+from zoe.deco import Agent, Message
 from zoe.models.users import Users
 
 gettext.install("archivist")
@@ -48,8 +48,17 @@ ZOE_LOCALE = env["ZOE_LOCALE"] or "en"
 class Archivist:
 
     @Message(tags=["add-section"])
-    def add_card_to_section(self, cid, sname, sender=None, src=None):
-        """ Adds a card to the given section. """
+    def add_card_to_section(self, parser):
+        """ Adds a card to the given section.
+
+            cid*   - card id
+            sname* - card title
+            sender - sender of the message
+            src    - channel by which the message was delivered
+        """
+        cid, sname, sender, src = self.multiparse(
+            parser, ['cid', 'sname', 'sender', 'src'])
+
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
@@ -72,8 +81,14 @@ class Archivist:
             _("Failed to add card to section '%s'") % sname, sender, src)
 
     @Message(tags=["card-list"])
-    def card_list(self, sender, src):
-        """ List all the cards in the archive. """
+    def card_list(self, parser):
+        """ List all the cards in the archive.
+
+            sender* - sender of the message
+            src*    - channel by which the message was delivered
+        """
+        sender, src = self.multiparse(parser, ['sender', 'src'])
+
         self.set_locale(sender)
 
         msg = ""
@@ -95,8 +110,16 @@ class Archivist:
         return self.feedback(msg, sender, src)
 
     @Message(tags=["card-sections"])
-    def card_sections(self, cid, sender, src):
-        """ Show all the sections a card appears in. """
+    def card_sections(self, parser):
+        """ Show all the sections a card appears in.
+
+            cid*   - card id
+            sender - sender of the message
+            src    - channel by which the message was delivered
+        """
+        cid, sender, src = self.multiparse(
+            parser, ['cid', 'sender', 'src'])
+
         self.set_locale(sender)
 
         msg = ""
@@ -122,8 +145,16 @@ class Archivist:
         return self.feedback(msg, sender, src)
 
     @Message(tags=["delete-card"])
-    def delete_card(self, cid, sender=None, src=None):
-        """ Remove a card from the archive. """
+    def delete_card(self, parser):
+        """ Remove a card from the archive.
+
+            cid*   - card id
+            sender - sender of the message
+            src    - channel by which the message was delivered
+        """
+        cid, sender, src = self.multiparse(
+            parser, ['cid', 'sender', 'src'])
+
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
@@ -145,8 +176,16 @@ class Archivist:
         return self.feedback(_("Failed to remove card '%s'") % cid, sender, src)
 
     @Message(tags=["delete-section"])
-    def delete_section(self, name, sender=None, src=None):
-        """ Remove a section from the archive. """
+    def delete_section(self, parser):
+        """ Remove a section from the archive.
+
+            name*  - section name
+            sender - sender of the message
+            src    - channel by which the message was delivered
+        """
+        name, sender, src = self.multiparse(
+            parser, ['name', 'sender', 'src'])
+
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
@@ -168,10 +207,19 @@ class Archivist:
         return self.feedback(_("Failed to remove '%s'") % name, sender, src)
 
     @Message(tags=["get-cards"])
-    def get_cards(self, cids, method, sender=None, src=None, to=None):
+    def get_cards(self, parser):
         """ Obtain information from a list of cards and send it to the user
             through the chosen communication method.
+
+            cids*   - list of card ids
+            method* - delivery method
+            sender  - sender of the message
+            src     - channel by which the message was delivered
+            to      - optional recipient of the cards
         """
+        cids, method, sender, src, to = self.multiparse(
+            parser, ['cids', 'methods', 'sender', 'src', 'to'])
+
         self.set_locale(sender)
 
         try:
@@ -204,9 +252,21 @@ class Archivist:
         return self.feedback(msg, to, src)
 
     @Message(tags=["modify-card"])
-    def modify_card(self, cid, title=None, desc=None, content=None,
-            tags=None, sender=None, src=None):
-        """ Modify an existing card. """
+    def modify_card(self, parser):
+        """ Modify an existing card.
+
+            cid*    - card id
+            title   - unique title of the card
+            desc    - description of the card
+            content - main content of the card
+            tags    - space separated tags
+            sender  - sender of the message
+            src     - channel by which the message was delivered
+        """
+        cid, title, desc, content, tags, sender, src= self.multiparse(
+            parser, ['cid', 'title', 'desc', 'content', 'tags',
+                'sender', 'src'])
+
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
@@ -239,12 +299,21 @@ class Archivist:
             sender, src)
 
     @Message(tags=["new-card"])
-    def new_card(self, title, desc, content, tags, sender=None):
+    def new_card(self, parser):
         """ Add a new card to the archive. Cards are added by sending
             an email with a specific format.
 
             Timestamp is obtained automatically.
+
+            title*   - unique title of the card
+            desc*    - description of the card
+            content* - main content of the card
+            tags*    - space separated tags
+            sender   - sender of the message
         """
+        title, desc, content, tags, sender = self.multiparse(
+            parser, ['title', 'desc', 'content', 'tags', 'sender'])
+
         self.set_locale(sender)
 
         dst = None
@@ -284,8 +353,16 @@ class Archivist:
             subject=subject)
 
     @Message(tags=["new-section"])
-    def new_section(self, name, sender=None, src=None):
-        """ Create a new section in the archive. """
+    def new_section(self, parser):
+        """ Create a new section in the archive.
+
+            name*  - unique name for the section
+            sender - sender of the message
+            src    - channel by which the message was delivered
+        """
+        name, sender, src = self.multiparse(
+            parser, ['name', 'sender', 'src'])
+
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
@@ -308,8 +385,17 @@ class Archivist:
             sender, src)
 
     @Message(tags=["remove-section"])
-    def remove_card_from_section(self, cid, sname, sender=None, src=None):
-        """ Remove a card from a given section. """
+    def remove_card_from_section(self, parser):
+        """ Remove a card from a given section.
+
+            cid*   - card id
+            sname* - section name
+            sender - sender of the message
+            src    - channel by which the message was delivered
+        """
+        cid, sname, sender, src = self.multiparse(
+            parser, ['cid', 'sname', 'sender', 'src'])
+
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
@@ -332,8 +418,17 @@ class Archivist:
             _("Could not remove card"), sender, src)
 
     @Message(tags=["rename-section"])
-    def rename_section(self, name, newname, sender=None, src=None):
-        """ Rename a section of the archive. """
+    def rename_section(self, parser):
+        """ Rename a section of the archive.
+
+            name*    - original section name
+            newname* - new section name
+            sender   - sender of the message
+            src      - channel by which the message was delivered
+        """
+        name, newname, sender, src = self.multiparse(
+            parser, ['name', 'newname', 'sender', 'src'])
+
         self.set_locale(sender)
 
         if not self.has_permissions(sender):
@@ -356,8 +451,17 @@ class Archivist:
             _("Could not rename"), sender, src)
 
     @Message(tags=["search"])
-    def search(self, query, sender, section=None, src=None):
-        """ Traverse a section and find cards relevant to the query. """
+    def search(self, parser):
+        """ Traverse a section and find cards relevant to the query.
+
+            query*  - search query
+            sender* - sender of the message
+            section - narrow search results to the specified section
+            src     - channel by which the message was delivered
+        """
+        query, sender, section, src = self.multiparse(
+            parser, ['query', 'sender', 'section', 'src'])
+
         self.set_locale(sender)
 
         if not query:
@@ -382,8 +486,14 @@ class Archivist:
         return self.feedback(result, sender, src)
 
     @Message(tags=["section-list"])
-    def section_list(self, sender, src):
-        """ Show all the sections in the archive. """
+    def section_list(self, parser):
+        """ Show all the sections in the archive.
+
+            sender* - sender of the message
+            src*    - channel by which the message was delivered
+        """
+        sender, src = self.multiparse(parser, ['sender', 'src'])
+
         self.set_locale(sender)
 
         try:
@@ -403,8 +513,16 @@ class Archivist:
         return self.feedback(msg, sender, src)
 
     @Message(tags=["section-cards"])
-    def section_cards(self, name, sender, src):
-        """ Show all the cards present in a section. """
+    def section_cards(self, parser):
+        """ Show all the cards present in a section.
+
+            name*   - section name
+            sender* - sender of the message
+            src*    - channel by which the message was delivered
+        """
+        name, sender, src = self.multiparse(
+            parser, ['name', 'sender', 'src'])
+
         self.set_locale(sender)
 
         msg = ""
@@ -485,6 +603,18 @@ class Archivist:
             return True
 
         return False
+
+    def multiparse(self, parser, keys):
+        """ Obtain several elements from the parser, identified by the
+            list of keys.
+
+            Values are returned in the order specified by the keys list.
+        """
+        result = []
+        for k in keys:
+            result.append(parser.get(k))
+
+        return result
 
     def set_locale(self, user):
         """ Set the locale for messages based on the locale of the sender.
