@@ -41,7 +41,6 @@ with open(path(env["ZOE_HOME"], "etc", "archivist.conf"), "r") as f:
     DB_PATH = f.readline().strip()
 
 LOCALEDIR = path(env["ZOE_HOME"], "locale")
-USERS = Users()
 ZOE_LOCALE = env["ZOE_LOCALE"] or "en"
 
 
@@ -482,7 +481,7 @@ class Archivist:
             agent manager (belongs to group 'archivists').
         """
         # No user, manual commands from terminal
-        if not user or user in USERS.membersof("archivists"):
+        if not user or user in Users().membersof("archivists"):
             return True
 
         return False
@@ -497,7 +496,7 @@ class Archivist:
             locale = ZOE_LOCALE
 
         else:
-            conf = USERS.subject(user)
+            conf = Users().subject(user)
             locale = conf.get("locale", ZOE_LOCALE)
 
         lang = gettext.translation("archivist", localedir=LOCALEDIR,
