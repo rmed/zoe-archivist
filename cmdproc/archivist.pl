@@ -224,7 +224,7 @@ sub get_section_me {
 # Get cards in specified section and send them to specified user by mail
 #
 sub get_section_snd {
-  print("message dst=archivist&tag=get-cards&sname=$strings[0]&method=mail&to=$mail&sender=$sender&src=$src\n");
+  print("message dst=archivist&tag=get-section&sname=$strings[0]&method=mail&to=$mail&sender=$sender&src=$src\n");
 }
 
 #
