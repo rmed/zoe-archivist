@@ -28,6 +28,7 @@ import sys
 sys.path.append('./lib')
 
 import gettext
+import threading
 import zoe
 from infocards.archive import Archive
 from os import environ as env
@@ -42,6 +43,8 @@ with open(path(env["ZOE_HOME"], "etc", "archivist.conf"), "r") as f:
 
 LOCALEDIR = path(env["ZOE_HOME"], "locale")
 ZOE_LOCALE = env["ZOE_LOCALE"] or "en"
+
+LOCK = threading.Lock()
 
 
 @Agent(name="archivist")
@@ -66,12 +69,13 @@ class Archivist:
             return self.feedback(_("You don't have permissions to do that"),
                 sender, src)
 
-        try:
-            ar = self.connect()
-            result = ar.add_card_to_section(cid=int(cid), sname=sname)
+        with LOCK:
+            try:
+                ar = self.connect()
+                result = ar.add_card_to_section(cid=int(cid), sname=sname)
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(
@@ -93,16 +97,17 @@ class Archivist:
 
         msg = ""
 
-        try:
-            ar = self.connect()
-            cards = ar.cards()
+        with LOCK:
+            try:
+                ar = self.connect()
+                cards = ar.cards()
 
-            for card in cards:
-                msg += "- [%d] %s: %s\n" % (
-                    card.id, card.title, card.desc)
+                for card in cards:
+                    msg += "- [%d] %s: %s\n" % (
+                        card.id, card.title, card.desc)
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if not msg:
             msg = _("No cards found")
@@ -124,20 +129,21 @@ class Archivist:
 
         msg = ""
 
-        try:
-            ar = self.connect()
-            card = ar.get_card(cid=int(cid))
+        with LOCK:
+            try:
+                ar = self.connect()
+                card = ar.get_card(cid=int(cid))
 
-            if not card:
-                return self.feedback(_("Card %s does not exist") % cid,
-                    sender, src)
+                if not card:
+                    return self.feedback(_("Card %s does not exist") % cid,
+                        sender, src)
 
-            sections = card.sections()
-            for section in sections:
-                msg += "- %s\n" % section.name
+                sections = card.sections()
+                for section in sections:
+                    msg += "- %s\n" % section.name
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if not msg:
             msg = _("No sections found")
@@ -162,12 +168,13 @@ class Archivist:
             return self.feedback(_("You don't have permissions to do that"),
                 sender, src)
 
-        try:
-            ar = self.connect()
-            result = ar.delete_card(cid=int(cid))
+        with LOCK:
+            try:
+                ar = self.connect()
+                result = ar.delete_card(cid=int(cid))
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(
@@ -193,12 +200,13 @@ class Archivist:
             return self.feedback(_("You don't have permissions to do that"),
                 sender, src)
 
-        try:
-            ar = self.connect()
-            result = ar.delete_section(name=name)
+        with LOCK:
+            try:
+                ar = self.connect()
+                result = ar.delete_section(name=name)
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(
@@ -222,23 +230,24 @@ class Archivist:
 
         self.set_locale(sender)
 
-        try:
-            ar = self.connect()
+        with LOCK:
+            try:
+                ar = self.connect()
 
-            msg = ""
+                msg = ""
 
-            for cid in cids.split(" "):
-                card = ar.get_card(cid=int(cid))
+                for cid in cids.split(" "):
+                    card = ar.get_card(cid=int(cid))
 
-                if card:
-                    msg += "%s\n\n" % self.build_card_msg(card)
-                    continue
+                    if card:
+                        msg += "%s\n\n" % self.build_card_msg(card)
+                        continue
 
-                msg += _("Card %s not found") % cid
-                msg += "\n"
+                    msg += _("Card %s not found") % cid
+                    msg += "\n"
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if not to:
             to = sender
@@ -266,22 +275,23 @@ class Archivist:
 
         self.set_locale(sender)
 
-        try:
-            ar = self.connect()
-            section = ar.get_section(name=sname)
+        with LOCK:
+            try:
+                ar = self.connect()
+                section = ar.get_section(name=sname)
 
-            if not section:
-                return self.feedback(
-                    _("Section %s does not exist") % sname, sender, src)
+                if not section:
+                    return self.feedback(
+                        _("Section %s does not exist") % sname, sender, src)
 
-            cards = section.cards()
+                cards = section.cards()
 
-            msg = ""
-            for card in cards:
-                msg += "%s\n\n" % self.build_card_msg(card)
+                msg = ""
+                for card in cards:
+                    msg += "%s\n\n" % self.build_card_msg(card)
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if not to:
             to = sender
@@ -317,23 +327,24 @@ class Archivist:
             return self.feedback(_("You don't have permissions to do that"),
                 sender, src)
 
-        try:
-            ar = self.connect()
+        with LOCK:
+            try:
+                ar = self.connect()
 
-            # Obtain current information
-            card = ar.get_card(cid=int(cid))
+                # Obtain current information
+                card = ar.get_card(cid=int(cid))
 
-            newcard = ar.modify_card(
-                cid=int(cid),
-                title=title or card.title,
-                desc=desc or card.desc,
-                content=content.replace('_NL_', '\n'),
-                tags=tags or card.tags,
-                author=sender or "UNKNOWN"
-            )
+                newcard = ar.modify_card(
+                    cid=int(cid),
+                    title=title or card.title,
+                    desc=desc or card.desc,
+                    content=content.replace('_NL_', '\n'),
+                    tags=tags or card.tags,
+                    author=sender or "UNKNOWN"
+                )
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if newcard:
             return self.feedback(_("Modified card '%s'") % cid, sender, src)
@@ -372,20 +383,21 @@ class Archivist:
             return self.feedback(_("You don't have permissions to do that"),
                 sender, dst, subject=subject)
 
-        try:
-            ar = self.connect()
+        with LOCK:
+            try:
+                ar = self.connect()
 
-            newcard = ar.new_card(
-                title,
-                desc,
-                content.replace('_NL_', '\n'),
-                tags,
-                sender or "UNKNOWN"
-            )
+                newcard = ar.new_card(
+                    title,
+                    desc,
+                    content.replace('_NL_', '\n'),
+                    tags,
+                    sender or "UNKNOWN"
+                )
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, dst,
-                subject=subject)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, dst,
+                    subject=subject)
 
         if newcard:
             return self.feedback(
@@ -413,12 +425,13 @@ class Archivist:
             return self.feedback(_("You don't have permissions to do that"),
                 sender, src)
 
-        try:
-            ar = self.connect()
-            result = ar.new_section(name)
+        with LOCK:
+            try:
+                ar = self.connect()
+                result = ar.new_section(name)
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(_("Created section '%s'") % name,
@@ -446,12 +459,13 @@ class Archivist:
             return self.feedback(_("You don't have permissions to do that"),
                 sender, src)
 
-        try:
-            ar = self.connect()
-            result = ar.remove_card_from_section(cid=int(cid), sname=sname)
+        with LOCK:
+            try:
+                ar = self.connect()
+                result = ar.remove_card_from_section(cid=int(cid), sname=sname)
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(
@@ -479,12 +493,13 @@ class Archivist:
             return self.feedback(_("You don't have permissions to do that"),
                 sender, src)
 
-        try:
-            ar = self.connect()
-            result = ar.rename_section(newname, oldname=name)
+        with LOCK:
+            try:
+                ar = self.connect()
+                result = ar.rename_section(newname, oldname=name)
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if result:
             return self.feedback(
@@ -512,16 +527,17 @@ class Archivist:
 
         result = ""
 
-        try:
-            ar = self.connect()
-            cards = ar.search(query, sname=section)
+        with LOCK:
+            try:
+                ar = self.connect()
+                cards = ar.search(query, sname=section)
 
-            for card in cards:
-                result += "- [%d] %s: %s\n" % (
-                    card.id, card.title, card.desc)
+                for card in cards:
+                    result += "- [%d] %s: %s\n" % (
+                        card.id, card.title, card.desc)
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if not result:
             result = _("No cards found")
@@ -539,16 +555,17 @@ class Archivist:
 
         self.set_locale(sender)
 
-        try:
-            ar = self.connect()
-            sections = ar.sections()
+        with LOCK:
+            try:
+                ar = self.connect()
+                sections = ar.sections()
 
-            msg = ""
-            for section in sections:
-                msg += "- %s\n" % section.name
+                msg = ""
+                for section in sections:
+                    msg += "- %s\n" % section.name
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if not msg:
             msg = _("No sections found")
@@ -570,21 +587,22 @@ class Archivist:
 
         msg = ""
 
-        try:
-            ar = self.connect()
-            section = ar.get_section(name=name)
+        with LOCK:
+            try:
+                ar = self.connect()
+                section = ar.get_section(name=name)
 
-            if not section:
-                return self.feedback(
-                    _("Section %s does not exist") % name, sender, src)
+                if not section:
+                    return self.feedback(
+                        _("Section %s does not exist") % name, sender, src)
 
-            cards = section.cards()
-            for card in cards:
-                msg += "- [%d] %s: %s\n" % (
-                    card.id, card.title, card.desc)
+                cards = section.cards()
+                for card in cards:
+                    msg += "- [%d] %s: %s\n" % (
+                        card.id, card.title, card.desc)
 
-        except Exception as e:
-            return self.feedback("Error: " + str(e), sender, src)
+            except Exception as e:
+                return self.feedback("Error: " + str(e), sender, src)
 
         if not msg:
             msg = _("No cards found")
